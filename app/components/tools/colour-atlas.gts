@@ -4,9 +4,9 @@ import { on } from '@ember/modifier';
 import { fn, hash } from '@ember/helper';
 import { service } from '@ember/service';
 import { htmlSafe } from '@ember/template';
-import { LinkTo } from '@ember/routing';
 import { modifier } from 'ember-modifier';
 import Icon from 'delphitools-v2/components/icon';
+import AtlasOpenIn from 'delphitools-v2/components/atlas-open-in';
 import {
 	hexToRgb,
 	rgbToHex,
@@ -287,10 +287,6 @@ export default class ColourAtlasTool extends Component {
 		});
 	}
 
-	get openIn() {
-		return OPEN_IN;
-	}
-
 	get queryColour() {
 		const hex = this.hex;
 		return hex ? colourToQuery(hex) : '';
@@ -557,23 +553,10 @@ export default class ColourAtlasTool extends Component {
 					{{/each}}
 				</div>
 
-				<div class="dt-atlas-open">
-					{{#each this.openIn key="id" as |tool|}}
-						<LinkTo
-							@route="tools.tool"
-							@model={{tool.id}}
-							@query={{hash
-								color=this.queryColour
-							}}
-						>
-							<Icon
-								@name={{tool.icon}}
-							/>
-							<span
-							>{{tool.name}}</span>
-						</LinkTo>
-					{{/each}}
-				</div>
+				<AtlasOpenIn
+					@tools={{OPEN_IN}}
+					@query={{hash color=this.queryColour}}
+				/>
 			{{else}}
 				<p class="dt-atlas-empty">Enter a valid colour
 					value to see conversions</p>

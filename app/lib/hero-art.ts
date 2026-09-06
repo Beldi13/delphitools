@@ -62,4 +62,9 @@ export const HERO_ART: HeroArt[] = [
 		artist: 'Art&Magic',
 		url: 'https://artandmagic.carrd.co/?utm_source=delphitools',
 	},
+	{
+		src: '/heroes/beatrice-lebrun.webp',
+		artist: 'Beatrice Lebrun',
+		url: 'https://beatricelebrunauthor.com/',
+	},
 ];

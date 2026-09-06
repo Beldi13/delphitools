@@ -296,19 +296,23 @@ check(
 	algebra,
 );
 
-await page.evaluate(() => {
-	const transfer = new DataTransfer();
-	transfer.items.add(
-		new File(['x'], 'IMG_2041.png', { type: 'image/png' }),
-	);
-	document.querySelector('.dt-omni').dispatchEvent(
-		new DragEvent('drop', {
-			dataTransfer: transfer,
-			bubbles: true,
-		}),
-	);
-});
-await sleep(200);
+async function dropPng() {
+	await page.evaluate(() => {
+		const transfer = new DataTransfer();
+		transfer.items.add(
+			new File(['x'], 'IMG_2041.png', { type: 'image/png' }),
+		);
+		document.querySelector('.dt-omni').dispatchEvent(
+			new DragEvent('drop', {
+				dataTransfer: transfer,
+				bubbles: true,
+			}),
+		);
+	});
+	await sleep(200);
+}
+
+await dropPng();
 const file = await page.evaluate(() => ({
 	name: document
 		.querySelector('.dt-omni-file-name')
@@ -332,6 +336,25 @@ check(
 	'file: clear restores the field',
 	await page.evaluate(() => !!document.querySelector('.dt-omni-input')),
 );
+
+// issue #59 regression
+await dropPng();
+await page.click('[data-tool="metadata-stripper"]');
+await page.waitForFunction(
+	() =>
+		location.pathname === '/tools/metadata-stripper' &&
+		!!document.querySelector('.dt-strip-name'),
+	{ timeout: 15000 },
+);
+const handed = await page.$eval('.dt-strip-name', (el) =>
+	el.textContent.trim(),
+);
+check(
+	'file: picking a tool hands the file over',
+	handed.startsWith('IMG_2041'),
+	handed,
+);
+await visit(page, '/');
 
 await page.keyboard.down('Meta');
 await page.keyboard.press('k');

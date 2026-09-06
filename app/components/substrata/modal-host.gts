@@ -4,7 +4,13 @@ import { modifier } from 'ember-modifier';
 import { eq } from 'ember-truth-helpers';
 import Icon from 'delphitools-v2/components/icon';
 import CanvasSizeModal from 'delphitools-v2/components/substrata/modals/canvas-size-modal';
+import ExportModal from 'delphitools-v2/components/substrata/modals/export-modal';
 import OnboardingModal from 'delphitools-v2/components/substrata/modals/onboarding-modal';
+import ShortcutsModal from 'delphitools-v2/components/substrata/modals/shortcuts-modal';
+import {
+	AboutDelphitoolsModal,
+	AboutSubstrataModal,
+} from 'delphitools-v2/components/substrata/modals/about-modal';
 import {
 	closeModal,
 	getOpenModal,
@@ -15,26 +21,17 @@ import { ensureScene } from 'delphitools-v2/lib/substrata/file-ops';
 import { finishOnboarding } from 'delphitools-v2/lib/substrata/onboarding-pref';
 import { TrackedExternal } from 'delphitools-v2/lib/tracked-external';
 
-const PASS1_MODALS: ReadonlySet<ModalId> = new Set<ModalId>([
-	'canvas-size',
-	'new-scene',
-	'onboarding',
-]);
-
 export default class ModalHost extends Component {
 	open = new TrackedExternal(subscribeModal, getOpenModal);
 
 	// track dialog close source
 	#closingProgrammatically = false;
 
+	// store outlives host
 	willDestroy() {
 		super.willDestroy();
 		this.open.unsubscribe();
-	}
-
-	get openId(): ModalId | null {
-		const id = this.open.current;
-		return id !== null && PASS1_MODALS.has(id) ? id : null;
+		closeModal();
 	}
 
 	sync = modifier(
@@ -64,8 +61,8 @@ export default class ModalHost extends Component {
 
 	get showClose() {
 		return (
-			this.openId === 'canvas-size' ||
-			this.openId === 'new-scene'
+			this.open.current !== null &&
+			this.open.current !== 'onboarding'
 		);
 	}
 
@@ -85,7 +82,7 @@ export default class ModalHost extends Component {
 	<template>
 		<dialog
 			class="sub-modal"
-			{{this.sync this.openId}}
+			{{this.sync this.open.current}}
 			{{on "close" this.onClose}}
 			{{this.backdropDismiss}}
 		>
@@ -99,12 +96,20 @@ export default class ModalHost extends Component {
 					<Icon @name="x" />
 				</button>
 			{{/if}}
-			{{#if (eq this.openId "canvas-size")}}
+			{{#if (eq this.open.current "canvas-size")}}
 				<CanvasSizeModal />
-			{{else if (eq this.openId "new-scene")}}
+			{{else if (eq this.open.current "new-scene")}}
 				<CanvasSizeModal @mode="new" />
-			{{else if (eq this.openId "onboarding")}}
+			{{else if (eq this.open.current "onboarding")}}
 				<OnboardingModal />
+			{{else if (eq this.open.current "export")}}
+				<ExportModal />
+			{{else if (eq this.open.current "shortcuts")}}
+				<ShortcutsModal />
+			{{else if (eq this.open.current "about-substrata")}}
+				<AboutSubstrataModal />
+			{{else if (eq this.open.current "about-delphitools")}}
+				<AboutDelphitoolsModal />
 			{{/if}}
 		</dialog>
 	</template>

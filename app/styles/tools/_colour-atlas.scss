@@ -276,43 +276,6 @@
 	}
 }
 
-.dt-atlas-open {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 1px;
-	border-top: 2px solid var(--border);
-	background: var(--border);
-
-	@include crayon.screen("md") {
-		grid-template-columns: repeat(6, 1fr);
-	}
-
-	a {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: crayon.size(1);
-		padding: crayon.size(3) crayon.size(2);
-		background: var(--background);
-		color: inherit;
-		font-size: crayon.font-size("xs");
-		font-weight: crayon.font-weight("bold");
-		text-align: center;
-		text-decoration: none;
-
-		.dt-icon {
-			width: crayon.size(5);
-			height: crayon.size(5);
-			color: var(--primary);
-		}
-
-		@include crayon.hover {
-			background: var(--accent);
-			color: var(--accent-foreground);
-		}
-	}
-}
-
 .dt-atlas-empty {
 	padding: crayon.size(8) crayon.size(4);
 	color: var(--muted-foreground);

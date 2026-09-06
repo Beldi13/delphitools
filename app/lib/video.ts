@@ -56,7 +56,7 @@ export class VideoIntake {
 	@tracked playing = false;
 
 	video: HTMLVideoElement | null = null;
-	file: File | null = null;
+	@tracked file: File | null = null;
 
 	#hooks: VideoIntakeHooks;
 

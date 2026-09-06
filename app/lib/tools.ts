@@ -40,6 +40,7 @@ export interface Tool {
 	external?: boolean;
 	route?: string;
 	highlight?: boolean;
+	atlas?: boolean;
 	wide?: boolean;
 	accepts?: string[];
 	carryColour?: boolean;
@@ -98,6 +99,17 @@ export const toolCategories: ToolCategory[] = [
 		name: 'Colour',
 		tools: [
 			{
+				id: 'colour-atlas',
+				name: 'Colour Atlas',
+				description:
+					'Everything about one colour, on one page',
+				icon: 'swatch-book',
+				href: '/tools/colour-atlas',
+				atlas: true,
+				carryColour: true,
+				new: true,
+			},
+			{
 				id: 'colorblind-sim',
 				name: 'Colour Blindness Simulator',
 				description:
@@ -106,16 +118,6 @@ export const toolCategories: ToolCategory[] = [
 				href: '/tools/colorblind-sim',
 				accepts: ['image/*'],
 				carryColour: true,
-			},
-			{
-				id: 'colour-atlas',
-				name: 'Colour Atlas',
-				description:
-					'Everything about one colour, on one page',
-				icon: 'swatch-book',
-				href: '/tools/colour-atlas',
-				carryColour: true,
-				new: true,
 			},
 			{
 				id: 'colour-converter',
@@ -198,6 +200,18 @@ export const toolCategories: ToolCategory[] = [
 		id: 'img-assets',
 		name: 'Images & Assets',
 		tools: [
+			{
+				id: 'image-atlas',
+				name: 'Image Atlas',
+				description:
+					'Everything about one image, on one page',
+				icon: 'image',
+				href: '/tools/image-atlas',
+				atlas: true,
+				accepts: ['image/*'],
+				new: true,
+				beta: true,
+			},
 			{
 				id: 'substrata',
 				name: 'Substrata',
@@ -356,7 +370,18 @@ export const toolCategories: ToolCategory[] = [
 					'Everything about one audio file, on one page',
 				icon: 'audio-lines',
 				href: '/tools/audio-atlas',
+				atlas: true,
 				accepts: AUDIO_ACCEPT,
+				new: true,
+			},
+			{
+				id: 'video-atlas',
+				name: 'Video Atlas',
+				description: 'Everything about one video file',
+				icon: 'clapperboard',
+				href: '/tools/video-atlas',
+				atlas: true,
+				accepts: VIDEO_ACCEPT,
 				new: true,
 			},
 			{
@@ -443,15 +468,6 @@ export const toolCategories: ToolCategory[] = [
 					'Add and subtract timecodes, drop-frame aware',
 				icon: 'clock',
 				href: '/tools/timecode-calc',
-				new: true,
-			},
-			{
-				id: 'video-atlas',
-				name: 'Video Atlas',
-				description: 'Everything about one video file',
-				icon: 'clapperboard',
-				href: '/tools/video-atlas',
-				accepts: VIDEO_ACCEPT,
 				new: true,
 			},
 			{

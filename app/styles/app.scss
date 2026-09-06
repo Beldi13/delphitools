@@ -36,6 +36,7 @@
 @use "tools/graph-calc";
 @use "tools/harmony-genny";
 @use "tools/http-status";
+@use "tools/image-atlas";
 @use "tools/image-clipper";
 @use "tools/image-compressor";
 @use "tools/image-converter";
@@ -1102,6 +1103,10 @@ $header-height: crayon.size(14);
 	@include crayon.dark {
 		color: oklch(80% 0.12 80deg);
 	}
+}
+
+.dt-nav-link--atlas {
+	color: var(--primary);
 }
 
 .dt-nav-label {
@@ -2409,29 +2414,25 @@ $header-height: crayon.size(14);
 
 // 50%/100% anchors origin tile
 .dt-404-page {
-	// at most 4 tiles wide
-	--tile: 25vw;
+	// cap keeps hero room
+	--tile: min(25vw, 40vh);
 
 	position: fixed;
 	inset: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: crayon.size(6);
+	display: grid;
+	grid-template-rows: 1fr auto;
+	place-items: center;
+	padding: crayon.size(6) crayon.size(6) 0;
 	background: url("/tiles/regular-tile.png") center bottom / var(--tile)
 		var(--tile) repeat;
 }
 
 .dt-404-bottom-tile {
-	position: absolute;
-	bottom: 0;
-	left: 50%;
 	width: var(--tile);
 	height: var(--tile);
 
 	// opaque; hides grid behind art
 	background: var(--background);
-	translate: -50% 0;
 	pointer-events: none;
 }
 
@@ -3591,5 +3592,42 @@ $header-height: crayon.size(14);
 			transparent
 		);
 		color: var(--primary);
+	}
+}
+
+.dt-atlas-open {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1px;
+	border-top: 2px solid var(--border);
+	background: var(--border);
+
+	@include crayon.screen("md") {
+		grid-template-columns: repeat(6, 1fr);
+	}
+
+	a {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: crayon.size(1);
+		padding: crayon.size(3) crayon.size(2);
+		background: var(--background);
+		color: inherit;
+		font-size: crayon.font-size("xs");
+		font-weight: crayon.font-weight("bold");
+		text-align: center;
+		text-decoration: none;
+
+		.dt-icon {
+			width: crayon.size(5);
+			height: crayon.size(5);
+			color: var(--primary);
+		}
+
+		@include crayon.hover {
+			background: var(--accent);
+			color: var(--accent-foreground);
+		}
 	}
 }

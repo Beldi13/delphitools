@@ -85,7 +85,6 @@ export interface Shade {
 	oklch: Triple;
 }
 
-/** [light, mid, dark] sat fraction; >1 clamped to sRGB edge */
 const MODE_RAMPS: Record<
 	GenerationMode,
 	[light: number, mid: number, dark: number]
@@ -97,7 +96,6 @@ const MODE_RAMPS: Record<
 	muted: [0.3, 0.5, 0.4],
 };
 
-/** ease over two levels each end; steps doubled chroma 100→200 */
 function rampScale(index: number, mode: GenerationMode): number {
 	const [light, mid, dark] = MODE_RAMPS[mode];
 	const fromEnd = SHADE_TARGETS.length - 1 - index;

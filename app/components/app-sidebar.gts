@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import type { TOC } from '@ember/component/template-only';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 import { LinkTo } from '@ember/routing';
@@ -38,6 +38,17 @@ const NavTip: TOC<{
 	</Tooltip>
 </template>;
 
+const SIDEBAR_CATEGORIES: ToolCategory[] = toolCategories.map((cat) => ({
+	...cat,
+	tools: cat.tools
+		.filter((t) => !t.route)
+		.sort(
+			(a, b) =>
+				Number(!!b.atlas) - Number(!!a.atlas) ||
+				a.name.localeCompare(b.name),
+		),
+}));
+
 export default class AppSidebar extends Component {
 	@service declare sidebar: SidebarService;
 
@@ -61,15 +72,12 @@ export default class AppSidebar extends Component {
 		return featuredTools.filter((t) => matches(t, this.query));
 	}
 
+	@cached
 	get categories(): ToolCategory[] {
-		return toolCategories.flatMap((cat) => {
-			const tools = cat.tools
-				.filter(
-					(t) =>
-						!t.route &&
-						matches(t, this.query),
-				)
-				.sort((a, b) => a.name.localeCompare(b.name));
+		return SIDEBAR_CATEGORIES.flatMap((cat) => {
+			const tools = cat.tools.filter((t) =>
+				matches(t, this.query),
+			);
 			return tools.length > 0 ? [{ ...cat, tools }] : [];
 		});
 	}
@@ -341,7 +349,11 @@ export default class AppSidebar extends Component {
 									<LinkTo
 										@route="tools.tool"
 										@model={{tool.id}}
-										class="dt-nav-link"
+										class="dt-nav-link
+											{{if
+												tool.atlas
+												'dt-nav-link--atlas'
+											}}"
 									>
 										<Icon
 											@name={{tool.icon}}

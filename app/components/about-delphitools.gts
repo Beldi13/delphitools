@@ -8,6 +8,11 @@ const CONTRIBUTORS = [
 	{ name: 'Moamal Alaa', url: 'https://github.com/Moamal-2000' },
 	{ name: 'Muhammad Fikri', url: 'https://github.com/MuhammadFikriiii' },
 	{
+		name: 'Gregorio Montagner',
+		url: 'https://github.com/TheTinkerersHaven',
+	},
+	{ name: 'Fleny', url: 'https://github.com/Fleny113' },
+	{
 		name: 'Claude',
 		url: 'https://rmv.fyi/notes/i-hope-you-don-t-use-generative-ai',
 	},

@@ -237,6 +237,36 @@ module('Unit | Service | flow', function (hooks) {
 		);
 	});
 
+	test('an omnibox handoff reaches the tool it was dropped on, once', async function (assert) {
+		const flow = lookup(this);
+		flow.handoff = { toolId: 'metadata-stripper', file: png() };
+		onPage(flow, 'word-counter');
+		assert.deepEqual(
+			await flow.pending('image/*'),
+			[],
+			'a detour drops it',
+		);
+		onPage(flow, 'metadata-stripper');
+		assert.deepEqual(await flow.pending('image/*'), [], 'for good');
+
+		flow.handoff = { toolId: 'metadata-stripper', file: png() };
+		assert.deepEqual(
+			await flow.pending('video/*'),
+			[],
+			'a zone that rejects it leaves it for the next zone',
+		);
+		assert.deepEqual(
+			(await flow.pending('image/*')).map((f) => f.name),
+			['shot.png'],
+		);
+		assert.deepEqual(
+			await flow.pending('image/*'),
+			[],
+			'delivered once',
+		);
+		assert.false(flow.active, 'no workflow was started');
+	});
+
 	test('exit clears everything', async function (assert) {
 		const flow = lookup(this);
 		await flow.start(getWorkflowById('paste-and-strip')!);

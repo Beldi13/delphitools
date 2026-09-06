@@ -4,6 +4,7 @@ import { on } from '@ember/modifier';
 import { htmlSafe } from '@ember/template';
 import { modifier } from 'ember-modifier';
 import Icon from 'delphitools-v2/components/icon';
+import AtlasOpenIn from 'delphitools-v2/components/atlas-open-in';
 import NdsLoader from 'delphitools-v2/components/ui/nds-loader';
 import WaveMinimap from 'delphitools-v2/components/wave-minimap';
 import {
@@ -701,6 +702,11 @@ export default class AudioAtlasTool extends Component {
 					</div>
 				{{/if}}
 			</div>
+
+			<AtlasOpenIn
+				@file={{this.intake.file}}
+				@self="audio-atlas"
+			/>
 
 			{{#if this.intake.error}}
 				<p

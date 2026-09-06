@@ -76,7 +76,7 @@ interface ToolDef {
 }
 
 // photoshop-adjacent keys (V C M L W U B); plain keypress, ignored in inputs
-const TOOLS: ToolDef[] = [
+export const TOOLS: ToolDef[] = [
 	{
 		id: 'move',
 		subs: [

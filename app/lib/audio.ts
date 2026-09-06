@@ -25,7 +25,7 @@ interface AudioIntakeHooks {
 export class AudioIntake {
 	@tracked fileName = '';
 	@tracked fileBytes = 0;
-	file: File | null = null;
+	@tracked file: File | null = null;
 	@tracked fileType = '';
 	@tracked buffer: AudioBuffer | null = null;
 	@tracked busy = false;

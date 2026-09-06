@@ -1,4 +1,7 @@
 import { LinkTo } from '@ember/routing';
+import { fn } from '@ember/helper';
+import { on } from '@ember/modifier';
+import { or } from 'ember-truth-helpers';
 import type { TOC } from '@ember/component/template-only';
 import Icon from 'delphitools-v2/components/icon';
 import type { Tool } from 'delphitools-v2/lib/tools';
@@ -9,12 +12,14 @@ export interface ToolGridSignature {
 		tools: Tool[];
 		query?: Record<string, string>;
 		carryLabel?: string;
+		onPick?: (id: string) => void;
 	};
 }
 
 const EMPTY_QUERY: Record<string, string> = {};
+const noop = () => {};
 
-function queryOrEmpty(query?: Record<string, string>) {
+export function queryOrEmpty(query?: Record<string, string>) {
 	return query ?? EMPTY_QUERY;
 }
 
@@ -74,11 +79,16 @@ const ToolGrid: TOC<ToolGridSignature> = <template>
 					@route="tools.tool"
 					@model={{tool.id}}
 					@query={{queryOrEmpty @query}}
+					data-tool={{tool.id}}
 					class="dt-cell
 						{{if
 							tool.highlight
 							'is-highlight'
 						}}"
+					{{on
+						"click"
+						(fn (or @onPick noop) tool.id)
+					}}
 				>
 					<Icon
 						@name={{tool.icon}}

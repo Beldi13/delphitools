@@ -294,10 +294,10 @@ export default class CanvasSizeModal extends Component<CanvasSizeModalSignature>
 					</button>
 				</div>
 			{{else}}
-				<div class="sub-csm-body">
+				<div class="sub-modal-body">
 					<section class="sub-csm-section">
 						<div
-							class="sub-csm-heading"
+							class="sub-modal-heading"
 						>Presets</div>
 						<div
 							class="segmented sub-csm-presets"
@@ -308,7 +308,7 @@ export default class CanvasSizeModal extends Component<CanvasSizeModalSignature>
 							}}
 								<button
 									type="button"
-									class="sub-csm-preset
+									class="sub-modal-opt
 										{{if
 											(this.isPresetActive
 												p
@@ -375,7 +375,7 @@ export default class CanvasSizeModal extends Component<CanvasSizeModalSignature>
 
 					<section class="sub-csm-section">
 						<div
-							class="sub-csm-heading"
+							class="sub-modal-heading"
 						>Background</div>
 						<div class="sub-csm-bg">
 							<div

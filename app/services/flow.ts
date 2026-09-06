@@ -3,6 +3,7 @@ import { cached, tracked } from '@glimmer/tracking';
 import type Owner from '@ember/owner';
 import type RouterService from '@ember/routing/router-service';
 import { modifier } from 'ember-modifier';
+import { matchesAccept } from 'delphitools-v2/modifiers/file-paste';
 import { colourToQuery } from 'delphitools-v2/lib/colour-query';
 import { saveBlob } from 'delphitools-v2/lib/download';
 import { flowHooks, reducedMotion } from 'delphitools-v2/lib/flow-hooks';
@@ -98,6 +99,7 @@ export default class FlowService extends Service {
 	@tracked colour: string | null = null;
 	@tracked landing = false;
 	runId = '';
+	handoff: { toolId: string; file: File } | null = null;
 
 	captureListener: ((origin: DOMRect | null) => Promise<void>) | null =
 		null;
@@ -377,8 +379,24 @@ export default class FlowService extends Service {
 		})();
 	}
 
+	// detour drops stale handoff
+	#takeHandoff(accept?: string): File | null {
+		const handoff = this.handoff;
+		if (!handoff) return null;
+		const onTarget =
+			this.router.currentRoute?.params?.['tool_id'] ===
+			handoff.toolId;
+		const picked =
+			onTarget &&
+			(!accept || matchesAccept(handoff.file, accept));
+		if (!onTarget || picked) this.handoff = null;
+		return picked ? handoff.file : null;
+	}
+
 	// one delivery per visit
 	async pending(accept?: string): Promise<File[]> {
+		const handed = this.#takeHandoff(accept);
+		if (handed) return [handed];
 		await this.#ready;
 		if (!this.workflow || !this.onStepPage) return [];
 		const earlier = this.files.filter(

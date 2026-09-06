@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { cached, tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import Icon from 'delphitools-v2/components/icon';
+import AtlasOpenIn from 'delphitools-v2/components/atlas-open-in';
 import filePaste from 'delphitools-v2/modifiers/file-paste';
 import { VideoIntake } from 'delphitools-v2/lib/video';
 import { VIDEO_ACCEPT, acceptAttr } from 'delphitools-v2/lib/tools';
@@ -245,6 +246,11 @@ export default class VideoAtlasTool extends Component {
 						</dl>
 					</section>
 				{{/each}}
+
+				<AtlasOpenIn
+					@file={{this.intake.file}}
+					@self="video-atlas"
+				/>
 
 				{{#if this.errorMessage}}
 					<p

@@ -4,6 +4,7 @@ import { on } from '@ember/modifier';
 import { service } from '@ember/service';
 import type RouterService from '@ember/routing/router-service';
 import type ThemeService from 'delphitools-v2/services/theme';
+import type FlowService from 'delphitools-v2/services/flow';
 import { htmlSafe } from '@ember/template';
 import type { SafeString } from '@ember/template';
 import { LinkTo } from '@ember/routing';
@@ -54,6 +55,7 @@ function formatBytes(bytes: number): string {
 export default class Omnibox extends Component<OmniboxSignature> {
 	@service declare router: RouterService;
 	@service declare theme: ThemeService;
+	@service declare flow: FlowService;
 
 	#picker: HTMLInputElement | null = null;
 
@@ -222,6 +224,11 @@ export default class Omnibox extends Component<OmniboxSignature> {
 	clearFile = () => {
 		this.file = null;
 		this.fileTools = [];
+	};
+
+	pick = (id: string) => {
+		if (this.file)
+			this.flow.handoff = { toolId: id, file: this.file };
 	};
 
 	picker = modifier((element: HTMLInputElement) => {
@@ -504,7 +511,10 @@ export default class Omnibox extends Component<OmniboxSignature> {
 						class="dt-section-count"
 					>{{this.matches.length}}</span>
 				</h2>
-				<ToolGrid @tools={{this.matches}} />
+				<ToolGrid
+					@tools={{this.matches}}
+					@onPick={{this.pick}}
+				/>
 			</section>
 		{{/if}}
 

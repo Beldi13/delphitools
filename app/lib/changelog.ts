@@ -8,6 +8,22 @@ export interface Release {
 
 export const RELEASES: Release[] = [
 	{
+		version: '2.0.4',
+		since: '2.0.3',
+		features: [
+			'Image Atlas: Learn everything about an image file. Credits to @TheTinkerersHaven and @Fleny113 on GitHub for contributing this tool!',
+			'Audio, Video and Image Atlas tools now offer to open your file in every tool that takes it.',
+			'Added new hero art',
+		],
+		fixes: [
+			'The omnibox can now hand a dropped file over to the tool you choose. Thanks, @eliorpom-cmd on GitHub!',
+			'Substrata: Fixed a bug that would prevent modal dialogues from opening',
+			'Fixed a bug that would hide the Back button behind the art, thanks Himanshu!',
+			'Palette Collection: All tab no longer breaks the container',
+		],
+		technical: [],
+	},
+	{
 		version: '2.0.3',
 		since: '2.0.2',
 		features: [],

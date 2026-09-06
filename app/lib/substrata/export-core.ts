@@ -2,6 +2,8 @@ export type ExportFormat = 'png' | 'jpeg' | 'webp' | 'jxl';
 export type ExportScale = 1 | 2 | 3;
 export type ExportScope = 'artboard' | 'layer';
 
+export const EXPORT_SCALES: ExportScale[] = [1, 2, 3];
+
 export interface ExportOptions {
 	format: ExportFormat;
 	scale: ExportScale;
