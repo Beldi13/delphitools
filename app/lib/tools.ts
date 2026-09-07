@@ -290,6 +290,15 @@ export const toolCategories: ToolCategory[] = [
 				new: true,
 			},
 			{
+				id: 'image-masker',
+				name: 'Image Masker',
+				description: 'Cut images into shapes',
+				icon: 'shapes',
+				href: '/tools/image-masker',
+				accepts: ['image/*'],
+				new: true,
+			},
+			{
 				id: 'image-splitter',
 				name: 'Image Splitter',
 				description: 'Split images into tiles',
