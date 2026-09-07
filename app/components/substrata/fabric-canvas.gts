@@ -1615,7 +1615,6 @@ export default class FabricCanvas extends Component {
 			const dims = layerDims(layer);
 			if (!dims || dims.width <= 0 || dims.height <= 0)
 				return null;
-			if (layer.transform.angle !== 0) return null;
 			return {
 				id: layer.id,
 				dims,
@@ -1628,26 +1627,34 @@ export default class FabricCanvas extends Component {
 				},
 			};
 		};
-				// normalize flipped crop bounds
-				const cropProject = (tgt: CropTarget) => {
+		// local <-> screen through scale, flips and rotation
+		const cropProject = (
+			t: Transform,
+			dims: { width: number; height: number },
+		) => {
 			const vt = canvas.viewportTransform;
-			const ex = tgt.t.scaleX * (tgt.t.flipX ? -1 : 1);
-			const ey = tgt.t.scaleY * (tgt.t.flipY ? -1 : 1);
+			const ex = t.scaleX * (t.flipX ? -1 : 1);
+			const ey = t.scaleY * (t.flipY ? -1 : 1);
+			const th = fabricUtil.degreesToRadians(t.angle);
+			const cos = Math.cos(th);
+			const sin = Math.sin(th);
 			return {
-				ex,
-				ey,
-				px: (lx: number) =>
-					(tgt.t.x +
-						(lx - tgt.dims.width / 2) *
-							ex) *
-						vt[0] +
-					vt[4],
-				py: (ly: number) =>
-					(tgt.t.y +
-						(ly - tgt.dims.height / 2) *
-							ey) *
-						vt[3] +
-					vt[5],
+				toScreen: (lx: number, ly: number) => {
+					const dx = (lx - dims.width / 2) * ex;
+					const dy = (ly - dims.height / 2) * ey;
+					return {
+						x: (t.x + dx * cos - dy * sin) * vt[0] + vt[4],
+						y: (t.y + dx * sin + dy * cos) * vt[3] + vt[5],
+					};
+				},
+				toLocal: (sceneX: number, sceneY: number) => {
+					const dx = sceneX - t.x;
+					const dy = sceneY - t.y;
+					return {
+						lx: (dx * cos + dy * sin) / (ex || 1) + dims.width / 2,
+						ly: (-dx * sin + dy * cos) / (ey || 1) + dims.height / 2,
+					};
+				},
 			};
 		};
 		let cropDrag: {
@@ -1661,14 +1668,12 @@ export default class FabricCanvas extends Component {
 				const cropClaim = (px: number, py: number): boolean => {
 			const tgt = cropTarget();
 			if (!tgt) return false;
-			const m = cropProject(tgt);
+			const m = cropProject(tgt.t, tgt.dims);
 			for (const fx of [0, 0.5, 1]) {
 				for (const fy of [0, 0.5, 1]) {
 					if (fx === 0.5 && fy === 0.5) continue;
-					const hpx = m.px(
+					const { x: hpx, y: hpy } = m.toScreen(
 						tgt.crop.x + fx * tgt.crop.w,
-					);
-					const hpy = m.py(
 						tgt.crop.y + fy * tgt.crop.h,
 					);
 					if (
@@ -1715,14 +1720,7 @@ export default class FabricCanvas extends Component {
 			}
 			const { start, dims, t, hx, hy } = cropDrag;
 			const p = sceneXY(px, py);
-			const lx =
-				(p.x - t.x) /
-					(t.scaleX * (t.flipX ? -1 : 1) || 1) +
-				dims.width / 2;
-			const ly =
-				(p.y - t.y) /
-					(t.scaleY * (t.flipY ? -1 : 1) || 1) +
-				dims.height / 2;
+			const { lx, ly } = cropProject(t, dims).toLocal(p.x, p.y);
 			let { x, y, w, h } = start;
 			if (hx === -1) {
 				const right = start.x + start.w;
@@ -2510,75 +2508,42 @@ export default class FabricCanvas extends Component {
 
 			if (cropInfo) {
 				const { dims, crop } = cropInfo;
-				const m = cropProject(cropInfo);
-				const bx0 = Math.min(m.px(0), m.px(dims.width));
-				const bx1 = Math.max(m.px(0), m.px(dims.width));
-				const by0 = Math.min(
-					m.py(0),
-					m.py(dims.height),
-				);
-				const by1 = Math.max(
-					m.py(0),
-					m.py(dims.height),
-				);
-				const cx0 = Math.min(
-					m.px(crop.x),
-					m.px(crop.x + crop.w),
-				);
-				const cx1 = Math.max(
-					m.px(crop.x),
-					m.px(crop.x + crop.w),
-				);
-				const cy0 = Math.min(
-					m.py(crop.y),
-					m.py(crop.y + crop.h),
-				);
-				const cy1 = Math.max(
-					m.py(crop.y),
-					m.py(crop.y + crop.h),
-				);
+				const m = cropProject(cropInfo.t, dims);
+				const quad = (
+					x: number,
+					y: number,
+					w: number,
+					h: number,
+				) => {
+					const corners = [
+						m.toScreen(x, y),
+						m.toScreen(x + w, y),
+						m.toScreen(x + w, y + h),
+						m.toScreen(x, y + h),
+					];
+					ctx.moveTo(corners[0]!.x, corners[0]!.y);
+					for (const c of corners.slice(1)) ctx.lineTo(c.x, c.y);
+					ctx.closePath();
+				};
 				ctx.save();
+				// veil = layer quad minus crop quad
 				ctx.fillStyle = 'rgba(0,0,0,0.35)';
-				if (cy0 > by0)
-					ctx.fillRect(
-						bx0,
-						by0,
-						bx1 - bx0,
-						cy0 - by0,
-					);
-				if (by1 > cy1)
-					ctx.fillRect(
-						bx0,
-						cy1,
-						bx1 - bx0,
-						by1 - cy1,
-					);
-				if (cx0 > bx0)
-					ctx.fillRect(
-						bx0,
-						cy0,
-						cx0 - bx0,
-						cy1 - cy0,
-					);
-				if (bx1 > cx1)
-					ctx.fillRect(
-						cx1,
-						cy0,
-						bx1 - cx1,
-						cy1 - cy0,
-					);
+				ctx.beginPath();
+				quad(0, 0, dims.width, dims.height);
+				quad(crop.x, crop.y, crop.w, crop.h);
+				ctx.fill('evenodd');
 				ctx.strokeStyle = ink.primary;
 				ctx.lineWidth = 1;
-				ctx.strokeRect(cx0, cy0, cx1 - cx0, cy1 - cy0);
+				ctx.beginPath();
+				quad(crop.x, crop.y, crop.w, crop.h);
+				ctx.stroke();
 				ctx.fillStyle = ink.background;
 				for (const fx of [0, 0.5, 1]) {
 					for (const fy of [0, 0.5, 1]) {
 						if (fx === 0.5 && fy === 0.5)
 							continue;
-						const hx = m.px(
+						const { x: hx, y: hy } = m.toScreen(
 							crop.x + fx * crop.w,
-						);
-						const hy = m.py(
 							crop.y + fy * crop.h,
 						);
 						ctx.fillRect(
@@ -2899,6 +2864,7 @@ export default class FabricCanvas extends Component {
 				setOpacity,
 				setCrop,
 				setMask,
+				setTransform,
 
 				textDump: (id: string) => {
 					const doc = getSnapshot();

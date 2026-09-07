@@ -103,6 +103,28 @@ px = await sample(850, 450);
 const pxIn = await sample(950, 450);
 check("move: pixels stay cropped at the new spot", `strip=${px?.join(",")} kept=${pxIn?.join(",")}`, near(px, WHITE) && near(pxIn, GREEN));
 
+// rotated 90° about (800, 450): local +x now points down the screen
+await page.evaluate((lid) => {
+  window.__substrata.setCrop(lid, null);
+  window.__substrata.setTransform(lid, { x: 800, y: 450, scaleX: 1, scaleY: 1, angle: 90, flipX: false, flipY: false });
+  window.__substrata.setTool("move", "crop");
+  window.__substrata.select([lid]);
+}, id);
+await sleep(400);
+px = await sampleTop(800, 650);
+check("rotated: right-edge handle is drawn at its rotated spot", px?.join(","), !!px && px[3] > 200);
+await drag(800, 650, 800, 550);
+ls = await layers();
+check("rotated: dragging that handle crops w to 300", JSON.stringify(ls[0]?.crop), cropNear(ls[0]?.crop, { x: 0, y: 0, w: 300, h: 300 }));
+px = await sample(800, 625);
+const keptRot = await sample(800, 500);
+check("rotated: strip is white, body keeps the fill", `strip=${px?.join(",")} kept=${keptRot?.join(",")}`, near(px, WHITE) && near(keptRot, GREEN));
+await drag(950, 400, 900, 400);
+ls = await layers();
+check("rotated: the local top edge (screen right) drags y to 50", JSON.stringify(ls[0]?.crop), cropNear(ls[0]?.crop, { x: 0, y: 50, w: 300, h: 250 }));
+px = await sampleTop(925, 400);
+check("rotated: veil covers the cropped-away band", px?.join(","), !!px && px[3] > 40 && px[0] < 40);
+
 await browser.close();
 console.log(failures === 0 ? "\nALL PASS" : `\n${failures} FAILURES`);
 process.exit(failures === 0 ? 0 : 1);
