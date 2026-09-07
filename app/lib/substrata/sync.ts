@@ -200,40 +200,103 @@ function syncLayer(
 		syncImageFilters(obj as EffectsImage, layer.filters);
 		syncImageEffects(obj as EffectsImage, layer.effects);
 	}
-	syncCropClip(obj, layer);
+	syncClip(obj, layer);
 	obj.setCoords();
 	return obj;
 }
 
 const cropRectOf = new WeakMap<FabricObject, Rect>();
+const maskPathOf = new WeakMap<FabricObject, { key: string; path: Path }>();
+const parsedMaskCache = new Map<
+	string,
+	ReturnType<typeof fabricPathUtil.makePathSimpler>
+>();
 
-/** fabric crop coordinates local */
-function syncCropClip(obj: FabricObject, layer: Layer): void {
-	const crop = layer.crop;
-	const dims = crop ? layerDims(layer) : null;
-	if (!crop || !dims) {
+// 100-box centred on object
+function maskPath(d: string, width: number, height: number): Path {
+	let simple = parsedMaskCache.get(d);
+	if (!simple) {
+		simple = fabricPathUtil.makePathSimpler(
+			fabricPathUtil.parsePath(d),
+		);
+		parsedMaskCache.set(d, simple);
+	}
+	const path = new Path(
+		fabricPathUtil.transformPath(
+			simple,
+			[width / 100, 0, 0, height / 100, 0, 0],
+			new Point(0, 0),
+		),
+		{ originX: 'center', originY: 'center' },
+	);
+	path.set({
+		left: path.pathOffset.x - width / 2,
+		top: path.pathOffset.y - height / 2,
+	});
+	return path;
+}
+
+// clip = mask ∩ crop
+function syncClip(obj: FabricObject, layer: Layer): void {
+	const dims = layer.crop || layer.mask ? layerDims(layer) : null;
+	const crop = dims ? layer.crop : null;
+	const mask = dims ? layer.mask : null;
+	if (!dims || (!crop && !mask)) {
 		if (obj.clipPath) {
 			obj.clipPath = undefined;
 			obj.set('dirty', true);
 		}
 		return;
 	}
-	let rect = cropRectOf.get(obj);
-	if (!rect) {
-		rect = new Rect({ originX: 'left', originY: 'top' });
-		cropRectOf.set(obj, rect);
+	let rect: Rect | undefined;
+	if (crop) {
+		rect = cropRectOf.get(obj);
+		if (!rect) {
+			rect = new Rect({ originX: 'left', originY: 'top' });
+			cropRectOf.set(obj, rect);
+		}
 	}
-	const left = crop.x - dims.width / 2;
-	const top = crop.y - dims.height / 2;
-	if (
-		obj.clipPath !== rect ||
-		rect.left !== left ||
-		rect.top !== top ||
-		rect.width !== crop.w ||
-		rect.height !== crop.h
-	) {
-		rect.set({ left, top, width: crop.w, height: crop.h });
-		obj.clipPath = rect;
+	let path: Path | undefined;
+	if (mask) {
+		const key = `${mask.d}|${dims.width}|${dims.height}`;
+		let cached = maskPathOf.get(obj);
+		if (cached?.key !== key) {
+			cached = {
+				key,
+				path: maskPath(mask.d, dims.width, dims.height),
+			};
+			maskPathOf.set(obj, cached);
+			obj.set('dirty', true);
+		}
+		path = cached.path;
+	}
+	if (rect && crop) {
+		// rect is path-centre relative
+		const origin = path
+			? {
+					x: path.pathOffset.x - dims.width / 2,
+					y: path.pathOffset.y - dims.height / 2,
+				}
+			: { x: 0, y: 0 };
+		const left = crop.x - dims.width / 2 - origin.x;
+		const top = crop.y - dims.height / 2 - origin.y;
+		if (
+			rect.left !== left ||
+			rect.top !== top ||
+			rect.width !== crop.w ||
+			rect.height !== crop.h
+		) {
+			rect.set({ left, top, width: crop.w, height: crop.h });
+			obj.set('dirty', true);
+		}
+	}
+	if (path && path.clipPath !== rect) {
+		path.clipPath = rect;
+		obj.set('dirty', true);
+	}
+	const clip = path ?? rect;
+	if (obj.clipPath !== clip) {
+		obj.clipPath = clip;
 		obj.set('dirty', true);
 	}
 }

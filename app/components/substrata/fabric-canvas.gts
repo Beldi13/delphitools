@@ -66,6 +66,7 @@ import {
 	groupLayers,
 	moveLayer,
 	setCrop,
+	setMask,
 	setOpacity,
 	setShapeParams,
 	setTextProps,
@@ -2821,6 +2822,10 @@ export default class FabricCanvas extends Component {
 									e.layer
 										.crop ??
 									null,
+								mask:
+									e.layer
+										.mask ??
+									null,
 							};
 						},
 					);
@@ -2893,6 +2898,7 @@ export default class FabricCanvas extends Component {
 				groupLayers,
 				setOpacity,
 				setCrop,
+				setMask,
 
 				textDump: (id: string) => {
 					const doc = getSnapshot();

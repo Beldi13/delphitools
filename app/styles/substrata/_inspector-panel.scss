@@ -368,3 +368,59 @@
 	font-size: 11px;
 	font-variant-numeric: tabular-nums;
 }
+
+.sub-insp-mask-current {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-inline-size: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+
+	svg {
+		flex-shrink: 0;
+		inline-size: 14px;
+		block-size: 14px;
+		fill: currentcolor;
+	}
+}
+
+.sub-insp-mask-actions {
+	display: flex;
+	flex-shrink: 0;
+	gap: 4px;
+}
+
+.sub-insp-mask-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	block-size: 24px;
+	border: 1px solid var(--border);
+	background-color: var(--card);
+	padding-inline: 8px;
+	font: inherit;
+	font-size: 10.5px;
+	color: inherit;
+	cursor: pointer;
+
+	.dt-icon {
+		inline-size: 12px;
+		block-size: 12px;
+	}
+
+	&:hover,
+	&.is-open {
+		background-color: var(--muted);
+	}
+}
+
+.sub-insp-mask-grid {
+	--mask-cell: 3rem;
+
+	.dt-masker-grid {
+		max-block-size: 10.5rem;
+		border-block-end: 0;
+	}
+}

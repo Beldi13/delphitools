@@ -5,6 +5,7 @@ import { on } from '@ember/modifier';
 import type { TOC } from '@ember/component/template-only';
 import { eq } from 'ember-truth-helpers';
 import Icon from 'delphitools-v2/components/icon';
+import MaskGrid from 'delphitools-v2/components/mask-grid';
 import { BLEND_OPTIONS } from 'delphitools-v2/components/substrata/blend-options';
 import { ShapeFillRows } from 'delphitools-v2/components/substrata/gradient-row';
 import {
@@ -37,9 +38,11 @@ import type {
 	Transform,
 } from 'delphitools-v2/lib/substrata/doc-model';
 import { getSnapshot, subscribe } from 'delphitools-v2/lib/substrata/doc-store';
+import type { MaskShape } from 'delphitools-v2/lib/mask-shapes';
 import {
 	setBlendMode,
 	setFill,
+	setMask,
 	setOpacity,
 	setShapeParams,
 	setShapeStroke,
@@ -442,6 +445,90 @@ class ShapeSection extends Component<ShapeSectionSignature> {
 				</ShapeRow>
 			{{/if}}
 			<StrokeRows @layer={{@layer}} />
+		</div>
+	</template>
+}
+
+class MaskSection extends Component<{ Args: { layer: Layer } }> {
+	@tracked open = false;
+
+	get mask() {
+		return this.args.layer.mask ?? null;
+	}
+
+	toggle = () => {
+		this.open = !this.open;
+	};
+
+	pick = (shape: MaskShape) => {
+		setMask(this.args.layer.id, { d: shape.d, label: shape.label });
+	};
+
+	clear = () => {
+		setMask(this.args.layer.id, null);
+	};
+
+	<template>
+		<SectionTitle @text="Mask" />
+		<div class="sub-insp-section">
+			<div class="sub-insp-row">
+				<span class="sub-insp-mask-current">
+					{{#if this.mask}}
+						<svg
+							viewBox="0 0 100 100"
+							aria-hidden="true"
+						><path
+								d={{this.mask.d}}
+							/></svg>
+						{{this.mask.label}}
+					{{else}}
+						<span
+							class="sub-insp-row-label"
+						>None</span>
+					{{/if}}
+				</span>
+				<span class="sub-insp-mask-actions">
+					{{#if this.mask}}
+						<button
+							type="button"
+							class="sub-insp-mask-btn"
+							aria-label="Clear mask"
+							title="Clear mask"
+							{{on
+								"click"
+								this.clear
+							}}
+						>
+							<Icon @name="x" />
+						</button>
+					{{/if}}
+					<button
+						type="button"
+						class="sub-insp-mask-btn
+							{{if
+								this.open
+								'is-open'
+							}}"
+						aria-expanded={{if
+							this.open
+							"true"
+							"false"
+						}}
+						{{on "click" this.toggle}}
+					>
+						<Icon @name="shapes" />
+						Shapes
+					</button>
+				</span>
+			</div>
+			{{#if this.open}}
+				<div class="sub-insp-mask-grid">
+					<MaskGrid
+						@selected={{this.mask.d}}
+						@onSelect={{this.pick}}
+					/>
+				</div>
+			{{/if}}
 		</div>
 	</template>
 }
@@ -1131,6 +1218,11 @@ export class InspectorBody extends Component {
 					{{#if this.textLayer}}
 						<TextSection
 							@layer={{this.textLayer}}
+						/>
+					{{/if}}
+					{{#if this.nat}}
+						<MaskSection
+							@layer={{this.leaf}}
 						/>
 					{{/if}}
 				</div>

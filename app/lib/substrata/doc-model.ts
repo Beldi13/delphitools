@@ -58,6 +58,12 @@ export interface CropRect {
 	h: number;
 }
 
+/** 0..100 box path, stretched to layer */
+export interface LayerMask {
+	d: string;
+	label: string;
+}
+
 interface BaseLayer {
 	id: LayerId;
 	name: string;
@@ -68,6 +74,7 @@ interface BaseLayer {
 	blendMode: BlendMode;
 	transform: Transform;
 	crop?: CropRect | null;
+	mask?: LayerMask | null;
 	filters: Filter[];
 	effects: Effect[];
 }

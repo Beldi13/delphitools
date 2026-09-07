@@ -25,6 +25,7 @@ import {
 	nudgeSelection,
 	reorderLayers,
 	setFill,
+	setMask,
 	setSiblingOrder,
 	setTransforms,
 	ungroupLayer,
@@ -988,6 +989,21 @@ module('Unit | Substrata | layer-ops', function (hooks) {
 			setTransforms([]);
 			assert.strictEqual(getSnapshot(), doc);
 			assert.false(canUndo());
+		});
+	});
+
+	module('setMask', function () {
+		test('sets the mask and undoes in one step', function (assert) {
+			const doc = load([leaf('a')]);
+			const mask = { d: 'M50 4L96 96L4 96Z', label: 'Tri' };
+			setMask('a', mask);
+			assert.deepEqual(find('a').mask, mask);
+			setMask('a', null);
+			assert.strictEqual(find('a').mask, null);
+			undo();
+			assert.deepEqual(find('a').mask, mask);
+			undo();
+			assert.strictEqual(getSnapshot(), doc);
 		});
 	});
 

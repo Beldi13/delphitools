@@ -1,6 +1,5 @@
-
 import { getSnapshot, update, updateTransient } from './doc-store';
-import { newId } from './doc-model';
+import { newId, type LayerMask } from './doc-model';
 import {
 	collectIds,
 	findLayer,
@@ -85,6 +84,20 @@ export function setCrop(
 	const apply = (doc: SubstrataDoc): SubstrataDoc => ({
 		...doc,
 		layers: mapLayerInTree(doc.layers, id, (l) => ({ ...l, crop })),
+		updatedAt: Date.now(),
+	});
+	if (opts?.transient) updateTransient(apply);
+	else update(apply);
+}
+
+export function setMask(
+	id: string,
+	mask: LayerMask | null,
+	opts?: { transient?: boolean },
+): void {
+	const apply = (doc: SubstrataDoc): SubstrataDoc => ({
+		...doc,
+		layers: mapLayerInTree(doc.layers, id, (l) => ({ ...l, mask })),
 		updatedAt: Date.now(),
 	});
 	if (opts?.transient) updateTransient(apply);
