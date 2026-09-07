@@ -1,5 +1,11 @@
 import { matchesAccept } from 'delphitools-v2/modifiers/file-paste';
-import { getCategoryByToolId, getToolById, type Tool } from './tools';
+import {
+	COLOUR_OUTPUT,
+	allTools,
+	getCategoryByToolId,
+	getToolById,
+	type Tool,
+} from './tools';
 
 export interface Workflow {
 	id: string;
@@ -100,7 +106,100 @@ export const WORKFLOWS: Workflow[] = [
 	},
 ];
 
+export const SLOTS = 3;
+export const CUSTOM_PREFIX = 'custom:';
+export const CUSTOM_NAME = 'Custom workflow';
+export const ORDINALS = ['First,', 'Then...', 'Finally,'];
+
+const MIME: Record<string, string> = {
+	'.png': 'image/png',
+	'.jpg': 'image/jpeg',
+	'.webp': 'image/webp',
+	'.gif': 'image/gif',
+	'.avif': 'image/avif',
+	'.tiff': 'image/tiff',
+	'.jxl': 'image/jxl',
+	'.svg': 'image/svg+xml',
+	'.ico': 'image/x-icon',
+	'.pdf': 'application/pdf',
+	'.zip': 'application/zip',
+	'.json': 'application/json',
+	'.txt': 'text/plain',
+	'.md': 'text/markdown',
+	'.html': 'text/html',
+	'.srt': 'application/x-subrip',
+	'.vtt': 'text/vtt',
+	'.mp4': 'video/mp4',
+	'.webm': 'video/webm',
+	'.wav': 'audio/wav',
+	'.m4a': 'audio/mp4',
+	'.ogg': 'audio/ogg',
+	'.flac': 'audio/flac',
+};
+
+// file for accept matching
+function sample(produced: string): File {
+	const isExt = produced.startsWith('.');
+	const ext = isExt
+		? produced
+		: (Object.keys(MIME).find((key) => MIME[key] === produced) ??
+			'');
+	return new File([], `out${ext}`, {
+		type: isExt ? (MIME[produced] ?? '') : produced,
+	});
+}
+
+// steps must capture files
+const eligible = (tool: Tool) =>
+	!tool.route && !tool.external && (tool.produces?.length ?? 0) > 0;
+
+export function canFollow(prev: Tool, next: Tool): boolean {
+	if (!eligible(next)) return false;
+	const out = prev.produces ?? [];
+	if (next.carryColour && out.includes(COLOUR_OUTPUT)) return true;
+	const accept = next.accepts?.join(',');
+	return (
+		!!accept &&
+		out.some(
+			(produced) =>
+				produced !== COLOUR_OUTPUT &&
+				matchesAccept(sample(produced), accept),
+		)
+	);
+}
+
+export const START_TOOLS = allTools.filter(eligible);
+
+export const nextTools = (prev: Tool): Tool[] =>
+	allTools.filter((tool) => canFollow(prev, tool));
+
+export function customWorkflow(steps: string[]): Workflow | undefined {
+	if (steps.length < 2 || steps.length > SLOTS) return undefined;
+	const tools = steps.map((id) => getToolById(id));
+	const first = tools[0];
+	if (!first || !eligible(first)) return undefined;
+	for (let i = 1; i < tools.length; i++) {
+		const tool = tools[i];
+		if (!tool || !canFollow(tools[i - 1]!, tool)) return undefined;
+	}
+	return {
+		id: CUSTOM_PREFIX + steps.join(','),
+		name: CUSTOM_NAME,
+		steps,
+	};
+}
+
+export const customHref = (steps: string[]) =>
+	`/workflows?steps=${steps.join(',')}`;
+
+export const workflowFromQuery = (steps: string | null | undefined) =>
+	steps ? customWorkflow(steps.split(',')) : undefined;
+
 export function getWorkflowById(id: string): Workflow | undefined {
+	if (id.startsWith(CUSTOM_PREFIX))
+		return customWorkflow(
+			id.slice(CUSTOM_PREFIX.length).split(','),
+		);
 	return WORKFLOWS.find((workflow) => workflow.id === id);
 }
 
@@ -111,8 +210,6 @@ export function workflowTools(workflow: Workflow): Tool[] {
 export function workflowCategory(workflow: Workflow): string {
 	return getCategoryByToolId(workflow.steps[0] ?? '')?.name ?? '';
 }
-
-export const SLOTS = 3;
 
 /** select latest accepted files */
 export function pendingFor<T extends { file: File }>(

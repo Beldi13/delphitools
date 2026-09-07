@@ -1929,6 +1929,138 @@ $header-height: crayon.size(14);
 	}
 }
 
+.dt-wf-custom-name {
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	cursor: default;
+}
+
+.dt-wf-custom-title {
+	display: flex;
+	flex-direction: column;
+	gap: crayon.size(1);
+}
+
+.dt-wf-link {
+	color: var(--primary);
+}
+
+.dt-wf-pick {
+	padding: crayon.size(2) crayon.size(4);
+
+	.dt-select-trigger {
+		width: 100%;
+		min-height: crayon.size(9);
+	}
+}
+
+.dt-wf-pick-value,
+.dt-wf-pick-list .dt-select-item {
+	display: flex;
+	align-items: center;
+	gap: crayon.size(2);
+
+	.dt-icon {
+		width: crayon.size(4);
+		height: crayon.size(4);
+		flex-shrink: 0;
+		color: var(--primary);
+	}
+}
+
+.dt-wf-pick-placeholder {
+	color: var(--muted-foreground);
+}
+
+.dt-wf-pick-list {
+	max-height: crayon.size(80);
+}
+
+.dt-wf-prepare {
+	display: grid;
+	gap: crayon.size(5);
+	max-width: crayon.size(160);
+	padding: crayon.size(6);
+	border: 2px solid var(--border);
+	background: var(--card);
+}
+
+.dt-wf-prepare-kicker {
+	display: flex;
+	align-items: center;
+	gap: crayon.size(2);
+	margin: 0;
+	font-size: crayon.font-size("xs");
+	font-weight: crayon.font-weight("medium");
+	letter-spacing: crayon.tracking("wide");
+	text-transform: uppercase;
+	color: var(--muted-foreground);
+
+	.dt-icon {
+		width: crayon.size(4);
+		height: crayon.size(4);
+	}
+}
+
+.dt-wf-prepare-steps {
+	display: grid;
+	gap: 1px;
+	margin: 0;
+	padding: 0;
+	border: 1px solid var(--border);
+	background: var(--border);
+	list-style: none;
+}
+
+.dt-wf-prepare-step {
+	display: flex;
+	align-items: center;
+	gap: crayon.size(3);
+	padding: crayon.size(3) crayon.size(4);
+	background: var(--card);
+	font-size: crayon.font-size("lg");
+	font-weight: crayon.font-weight("bold");
+
+	.dt-icon {
+		width: crayon.size(5);
+		height: crayon.size(5);
+		flex-shrink: 0;
+		color: var(--primary);
+	}
+}
+
+.dt-wf-prepare-ord {
+	min-width: crayon.size(16);
+	font-size: crayon.font-size("xs");
+	font-weight: crayon.font-weight("medium");
+	letter-spacing: crayon.tracking("wide");
+	text-transform: uppercase;
+	color: var(--muted-foreground);
+}
+
+.dt-wf-prepare-actions {
+	display: flex;
+	align-items: center;
+	gap: crayon.size(5);
+}
+
+.dt-wf-prepare-go {
+	width: auto;
+	min-height: crayon.size(11);
+	padding-inline: crayon.size(6);
+}
+
+.dt-wf-prepare-all {
+	font-size: crayon.font-size("sm");
+	color: var(--muted-foreground);
+	text-decoration: underline;
+
+	@include crayon.hover {
+		color: var(--foreground);
+	}
+}
+
 .dt-badge {
 	padding: crayon.size(0.5) crayon.size(2);
 	background: var(--secondary);

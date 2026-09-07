@@ -25,6 +25,8 @@ export const VIDEO_ACCEPT = [
 export const SUBTITLE_ACCEPT = ['.srt', '.vtt'];
 export const TEXT_ACCEPT = ['.md', '.txt', 'text/markdown', 'text/plain'];
 
+export const COLOUR_OUTPUT = 'colour';
+
 export const acceptAttr = (list: readonly string[]): string => list.join(',');
 
 export type IconName = string;
@@ -44,6 +46,8 @@ export interface Tool {
 	wide?: boolean;
 	accepts?: string[];
 	carryColour?: boolean;
+	// same vocabulary as accepts
+	produces?: string[];
 }
 
 export interface ToolCategory {
@@ -64,6 +68,7 @@ export const toolCategories: ToolCategory[] = [
 					'Put non-square images on a square matte',
 				icon: 'square',
 				href: '/tools/matte-genny',
+				produces: ['image/png'],
 				accepts: ['image/*'],
 			},
 			{
@@ -73,6 +78,7 @@ export const toolCategories: ToolCategory[] = [
 					'Split images for Instagram carousel scrolls',
 				icon: 'gallery-vertical',
 				href: '/tools/scroll-genny',
+				produces: ['image/png'],
 				accepts: ['image/*'],
 			},
 			{
@@ -82,6 +88,7 @@ export const toolCategories: ToolCategory[] = [
 					'Crop images for Instagram, Bluesky & Threads',
 				icon: 'crop',
 				href: '/tools/social-cropper',
+				produces: ['image/png'],
 				accepts: ['image/*'],
 			},
 			{
@@ -90,6 +97,7 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Add watermarks to images',
 				icon: 'stamp',
 				href: '/tools/watermarker',
+				produces: ['image/png'],
 				accepts: ['image/*'],
 			},
 		],
@@ -125,6 +133,7 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Convert between colour formats',
 				icon: 'pipette',
 				href: '/tools/colour-converter',
+				produces: [COLOUR_OUTPUT],
 				carryColour: true,
 			},
 			{
@@ -143,6 +152,7 @@ export const toolCategories: ToolCategory[] = [
 					'Create linear, corner, and mesh gradients',
 				icon: 'blend',
 				href: '/tools/gradient-genny',
+				produces: ['image/png'],
 				carryColour: true,
 			},
 			{
@@ -176,6 +186,7 @@ export const toolCategories: ToolCategory[] = [
 					'Generate beautiful colour palettes',
 				icon: 'pen-line',
 				href: '/tools/palette-genny',
+				produces: ['image/png'],
 			},
 			{
 				id: 'pixel-picker',
@@ -184,6 +195,7 @@ export const toolCategories: ToolCategory[] = [
 					'Sample colours from any image with a zoom loupe',
 				icon: 'crosshair',
 				href: '/tools/pixel-picker',
+				produces: [COLOUR_OUTPUT],
 				accepts: ['image/*'],
 			},
 			{
@@ -231,6 +243,7 @@ export const toolCategories: ToolCategory[] = [
 					'Add colour noise overlay to artwork',
 				icon: 'sparkles',
 				href: '/tools/artwork-enhancer',
+				produces: ['image/png'],
 				accepts: ['image/*'],
 			},
 			{
@@ -240,6 +253,7 @@ export const toolCategories: ToolCategory[] = [
 					'Remove backgrounds from images automatically',
 				icon: 'eraser',
 				href: '/tools/background-remover',
+				produces: ['image/png'],
 				accepts: ['image/*'],
 				beta: true,
 			},
@@ -249,6 +263,11 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Generate favicons from any image',
 				icon: 'image',
 				href: '/tools/favicon-genny',
+				produces: [
+					'image/png',
+					'image/x-icon',
+					'application/zip',
+				],
 				accepts: ['image/*'],
 			},
 			{
@@ -258,6 +277,7 @@ export const toolCategories: ToolCategory[] = [
 					'Trim transparent edges from PNGs to the smallest dimensions',
 				icon: 'crop',
 				href: '/tools/image-clipper',
+				produces: ['image/png'],
 				accepts: ['.png'],
 			},
 			{
@@ -267,6 +287,12 @@ export const toolCategories: ToolCategory[] = [
 					'Shrink JPEG, WebP, PNG and AVIF files',
 				icon: 'shrink',
 				href: '/tools/image-compressor',
+				produces: [
+					'image/webp',
+					'image/jpeg',
+					'image/png',
+					'image/avif',
+				],
 				accepts: ['image/*'],
 				new: true,
 			},
@@ -277,6 +303,15 @@ export const toolCategories: ToolCategory[] = [
 					'Convert between PNG, JPEG, WebP, JXL, GIF, BMP, TIFF, ICO, ICNS with resize and format options',
 				icon: 'refresh-cw',
 				href: '/tools/image-converter',
+				produces: [
+					'image/png',
+					'image/jpeg',
+					'image/webp',
+					'image/gif',
+					'image/tiff',
+					'image/x-icon',
+					'application/zip',
+				],
 				accepts: ['image/*', '.jxl'],
 			},
 			{
@@ -286,6 +321,7 @@ export const toolCategories: ToolCategory[] = [
 					'Straighten an image by the corners',
 				icon: 'vector-square',
 				href: '/tools/image-deskewer',
+				produces: ['image/png'],
 				accepts: ['image/*'],
 				new: true,
 			},
@@ -295,6 +331,7 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Cut images into shapes',
 				icon: 'shapes',
 				href: '/tools/image-masker',
+				produces: ['image/png'],
 				accepts: ['image/*'],
 				new: true,
 			},
@@ -304,6 +341,7 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Split images into tiles',
 				icon: 'scissors',
 				href: '/tools/image-splitter',
+				produces: ['image/png'],
 				accepts: ['image/*'],
 			},
 			{
@@ -312,6 +350,12 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Combine multiple images into one',
 				icon: 'combine',
 				href: '/tools/image-stitcher',
+				produces: [
+					'image/png',
+					'image/jpeg',
+					'image/webp',
+					'image/jxl',
+				],
 				accepts: ['image/*'],
 			},
 			{
@@ -321,6 +365,7 @@ export const toolCategories: ToolCategory[] = [
 					'Trace raster images to SVG vectors',
 				icon: 'scan-line',
 				href: '/tools/image-tracer',
+				produces: ['image/svg+xml'],
 				accepts: ['image/*'],
 			},
 			{
@@ -330,6 +375,12 @@ export const toolCategories: ToolCategory[] = [
 					'Strip EXIF and GPS metadata from images',
 				icon: 'shield-check',
 				href: '/tools/metadata-stripper',
+				produces: [
+					'image/jpeg',
+					'image/png',
+					'image/webp',
+					'image/gif',
+				],
 				accepts: ['image/*'],
 				new: true,
 			},
@@ -340,6 +391,7 @@ export const toolCategories: ToolCategory[] = [
 					'Paste and download an image from your clipboard',
 				icon: 'clipboard-paste',
 				href: '/tools/paste-image',
+				produces: ['image/png'],
 				accepts: ['image/*'],
 			},
 			{
@@ -348,6 +400,7 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Generate placeholder images',
 				icon: 'layout-grid',
 				href: '/tools/placeholder-genny',
+				produces: ['image/png', 'image/svg+xml'],
 			},
 			{
 				id: 'svg-optimiser',
@@ -355,6 +408,7 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Optimise and minify SVG files',
 				icon: 'file-image',
 				href: '/tools/svg-optimiser',
+				produces: ['image/svg+xml'],
 				accepts: ['.svg'],
 			},
 			{
@@ -400,6 +454,12 @@ export const toolCategories: ToolCategory[] = [
 					'Extract the audio out of a video file',
 				icon: 'file-audio',
 				href: '/tools/audio-extractor',
+				produces: [
+					'audio/wav',
+					'audio/mp4',
+					'audio/ogg',
+					'audio/flac',
+				],
 				accepts: VIDEO_ACCEPT,
 				new: true,
 			},
@@ -409,6 +469,7 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Normalise audio loudness',
 				icon: 'gauge',
 				href: '/tools/audio-normaliser',
+				produces: ['audio/wav'],
 				accepts: AUDIO_ACCEPT,
 				new: true,
 			},
@@ -419,6 +480,7 @@ export const toolCategories: ToolCategory[] = [
 					'Cut and fade audio, export as WAV',
 				icon: 'scissors',
 				href: '/tools/audio-trimmer',
+				produces: ['audio/wav'],
 				accepts: AUDIO_ACCEPT,
 				new: true,
 			},
@@ -429,6 +491,7 @@ export const toolCategories: ToolCategory[] = [
 					'Transcribe audio and video to subtitles',
 				icon: 'captions',
 				href: '/tools/auto-subtitle',
+				produces: ['.srt', '.vtt'],
 				accepts: [...AUDIO_ACCEPT, ...VIDEO_ACCEPT],
 				new: true,
 			},
@@ -439,6 +502,7 @@ export const toolCategories: ToolCategory[] = [
 					'Grab stills and contact sheets from video',
 				icon: 'film',
 				href: '/tools/frame-extractor',
+				produces: ['image/png', 'application/zip'],
 				accepts: VIDEO_ACCEPT,
 				new: true,
 			},
@@ -449,6 +513,7 @@ export const toolCategories: ToolCategory[] = [
 					'Record your screen with optional tab audio (supported browsers only) and microphone audio',
 				icon: 'monitor-up',
 				href: '/tools/screen-recorder',
+				produces: ['video/webm'],
 				new: true,
 			},
 			{
@@ -458,6 +523,7 @@ export const toolCategories: ToolCategory[] = [
 					'Convert, shift and rescale SRT and VTT subtitles',
 				icon: 'captions',
 				href: '/tools/subtitle-converter',
+				produces: ['.srt', '.vtt'],
 				accepts: SUBTITLE_ACCEPT,
 				new: true,
 			},
@@ -467,6 +533,7 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Burn subtitles to video',
 				icon: 'subtitles',
 				href: '/tools/subtitle-studio',
+				produces: ['video/webm'],
 				accepts: [...VIDEO_ACCEPT, ...SUBTITLE_ACCEPT],
 				new: true,
 			},
@@ -485,6 +552,7 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Strip the audio from a video',
 				icon: 'volume-x',
 				href: '/tools/video-muter',
+				produces: ['video/mp4', 'video/webm'],
 				accepts: VIDEO_ACCEPT,
 				new: true,
 			},
@@ -495,6 +563,7 @@ export const toolCategories: ToolCategory[] = [
 					'Turn video clips into looping GIFs',
 				icon: 'clapperboard',
 				href: '/tools/video-to-gif',
+				produces: ['image/gif'],
 				accepts: VIDEO_ACCEPT,
 				new: true,
 			},
@@ -504,6 +573,7 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Cut a video in/out style',
 				icon: 'scissors',
 				href: '/tools/video-trimmer',
+				produces: ['video/mp4', 'video/webm'],
 				accepts: VIDEO_ACCEPT,
 				new: true,
 			},
@@ -514,6 +584,7 @@ export const toolCategories: ToolCategory[] = [
 					'Record voice memos in the browser',
 				icon: 'mic',
 				href: '/tools/voice-recorder',
+				produces: ['audio/webm'],
 				new: true,
 			},
 			{
@@ -523,6 +594,7 @@ export const toolCategories: ToolCategory[] = [
 					'Render audio waveforms as PNG or SVG',
 				icon: 'audio-waveform',
 				href: '/tools/waveform-genny',
+				produces: ['image/png', 'image/svg+xml'],
 				accepts: AUDIO_ACCEPT,
 				new: true,
 			},
@@ -539,6 +611,13 @@ export const toolCategories: ToolCategory[] = [
 					'Convert documents between Markdown, HTML, Word, LaTeX, EPUB and more',
 				icon: 'file-type-2',
 				href: '/tools/doc-converter',
+				produces: [
+					'.md',
+					'.html',
+					'.docx',
+					'.epub',
+					'.txt',
+				],
 				accepts: [
 					'.md',
 					'.html',
@@ -645,6 +724,10 @@ export const toolCategories: ToolCategory[] = [
 					'Merge, split and rearrange PDF pages',
 				icon: 'file-stack',
 				href: '/tools/pdf-organiser',
+				produces: [
+					'application/pdf',
+					'application/zip',
+				],
 				accepts: ['.pdf'],
 			},
 			{
@@ -654,6 +737,11 @@ export const toolCategories: ToolCategory[] = [
 					'Turn images into a PDF, or pages into PNGs',
 				icon: 'file-image',
 				href: '/tools/image-to-pdf',
+				produces: [
+					'application/pdf',
+					'image/png',
+					'application/zip',
+				],
 				accepts: ['image/*', '.pdf'],
 			},
 			{
@@ -663,6 +751,7 @@ export const toolCategories: ToolCategory[] = [
 					'Rotate or crop pages or entire documents',
 				icon: 'crop',
 				href: '/tools/pdf-rotate-crop',
+				produces: ['application/pdf'],
 				accepts: ['.pdf'],
 			},
 			{
@@ -672,6 +761,7 @@ export const toolCategories: ToolCategory[] = [
 					'Add page numbers or stamps to documents',
 				icon: 'file-digit',
 				href: '/tools/pdf-page-numberer',
+				produces: ['application/pdf'],
 				accepts: ['.pdf'],
 			},
 			{
@@ -680,6 +770,7 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Shrink PDF filesizes',
 				icon: 'shrink',
 				href: '/tools/pdf-compressor',
+				produces: ['application/pdf'],
 				accepts: ['.pdf'],
 			},
 		],
@@ -695,6 +786,7 @@ export const toolCategories: ToolCategory[] = [
 					'Impose PDF pages for booklet, saddle-stitch, and N-up printing',
 				icon: 'layers',
 				href: '/tools/imposer',
+				produces: ['application/pdf'],
 				accepts: ['.pdf'],
 			},
 			{
@@ -704,6 +796,7 @@ export const toolCategories: ToolCategory[] = [
 					'Impose single-sheet zines: 8-page mini-zine and accordion folds',
 				icon: 'book-open',
 				href: '/tools/zine-imposer',
+				produces: ['application/pdf'],
 				accepts: ['.pdf'],
 			},
 		],
@@ -737,6 +830,7 @@ export const toolCategories: ToolCategory[] = [
 					'Format or minify JSON or look at it',
 				icon: 'braces',
 				href: '/tools/json-formatter',
+				produces: ['application/json'],
 				new: true,
 				accepts: ['.json'],
 			},
@@ -801,6 +895,7 @@ export const toolCategories: ToolCategory[] = [
 					'Generate Data Matrix, Aztec, PDF417, Code 128, EAN-13, and more',
 				icon: 'barcode',
 				href: '/tools/code-genny',
+				produces: ['image/png', 'application/zip'],
 			},
 			{
 				id: 'decoder',
@@ -826,6 +921,11 @@ export const toolCategories: ToolCategory[] = [
 					'Generate styled QR codes with custom colors, shapes, and logos',
 				icon: 'qr-code',
 				href: '/tools/qr-genny',
+				produces: [
+					'image/png',
+					'image/svg+xml',
+					'application/zip',
+				],
 			},
 			{
 				id: 'markdown-writer',
@@ -834,6 +934,7 @@ export const toolCategories: ToolCategory[] = [
 					'Text editor with manipulation tools',
 				icon: 'pen-line',
 				href: '/tools/markdown-writer',
+				produces: ['text/plain'],
 				accepts: TEXT_ACCEPT,
 			},
 		],
@@ -911,6 +1012,7 @@ export const toolCategories: ToolCategory[] = [
 					'Transliterate English text to the Shavian alphabet',
 				icon: 'languages',
 				href: '/tools/shavian-transliterator',
+				produces: ['image/png'],
 			},
 			{
 				id: 'morse-code',
@@ -919,6 +1021,7 @@ export const toolCategories: ToolCategory[] = [
 					'Encode, decode and play Morse code',
 				icon: 'radio',
 				href: '/tools/morse-code',
+				produces: ['text/plain'],
 				new: true,
 			},
 			{
@@ -927,6 +1030,7 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Turn text into Braille cells',
 				icon: 'grip-vertical',
 				href: '/tools/braille-converter',
+				produces: ['text/plain'],
 				new: true,
 			},
 			{
@@ -935,6 +1039,7 @@ export const toolCategories: ToolCategory[] = [
 				description: 'Transcribe English text into IPA',
 				icon: 'ear',
 				href: '/tools/ipa-transcriber',
+				produces: ['text/plain'],
 				new: true,
 			},
 			{
@@ -944,6 +1049,7 @@ export const toolCategories: ToolCategory[] = [
 					'Translate text to NATO or DIN-5009 calls',
 				icon: 'radio-tower',
 				href: '/tools/nato-phonetic',
+				produces: ['text/plain'],
 				new: true,
 			},
 		],

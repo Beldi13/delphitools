@@ -6,7 +6,7 @@ import { destroy } from '@ember/destroyable';
 import { setupTest } from 'delphitools-v2/tests/helpers';
 import { clearFlowFiles } from 'delphitools-v2/lib/flow-store';
 import { flowHooks } from 'delphitools-v2/lib/flow-hooks';
-import { getWorkflowById } from 'delphitools-v2/lib/workflows';
+import { customWorkflow, getWorkflowById } from 'delphitools-v2/lib/workflows';
 import type FlowService from 'delphitools-v2/services/flow';
 
 interface Ctx {
@@ -265,6 +265,33 @@ module('Unit | Service | flow', function (hooks) {
 			'delivered once',
 		);
 		assert.false(flow.active, 'no workflow was started');
+	});
+
+	test('a custom workflow starts and restores from its id', async function (assert) {
+		const flow = lookup(this);
+		await flow.start(
+			customWorkflow(['paste-image', 'metadata-stripper'])!,
+		);
+		assert.strictEqual(
+			(
+				JSON.parse(sessionStorage.getItem('flow')!) as {
+					workflow: string;
+				}
+			).workflow,
+			'custom:paste-image,metadata-stripper',
+		);
+		assert.deepEqual(
+			flow.tools.map((tool) => tool.id),
+			['paste-image', 'metadata-stripper'],
+		);
+
+		const { owner } = this as unknown as Ctx;
+		destroy(flowHooks.current!);
+		owner.unregister('service:flow');
+		const restored = owner.lookup('service:flow') as FlowService;
+		assert.true(restored.active);
+		assert.strictEqual(restored.workflow?.name, 'Custom workflow');
+		assert.strictEqual(restored.tools.length, 2);
 	});
 
 	test('exit clears everything', async function (assert) {
