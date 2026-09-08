@@ -64,11 +64,10 @@ export default class ChangelogPopup extends Component {
 		<Dialog as |d|>
 			<button
 				type="button"
-				class="dt-hero-pill"
+				class="dt-hero-link"
 				{{d.focusOnClose}}
 				{{on "click" d.open}}
 			>
-				<Icon @name="sparkles" />
 				{{PILL_TEXT}}
 			</button>
 			<d.Content class="dt-wn dt-cl">

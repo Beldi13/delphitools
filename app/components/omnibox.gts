@@ -282,8 +282,8 @@ export default class Omnibox extends Component<OmniboxSignature> {
 	<template>
 		<header class="dt-hero is-doodle">
 			<div class="dt-hero-pills">
-				<WhatsNew />
 				<ChangelogPopup />
+				<WhatsNew />
 			</div>
 			<img src={{this.artSrc}} alt="" class="dt-hero-art" />
 			<h1 class="dt-sr-only">delphitools</h1>

@@ -373,11 +373,14 @@ check(
 	legend.join('|') === "Choose a file|Paste from clipboard|I'm feeling lucky",
 	legend.join('|'),
 );
+check('the 2.0 pill starts hidden behind the chevron', !(await page.$('.dt-hero-pill')));
+await page.click('.dt-hero-reveal');
+await sleep(100);
 const pill = await page.$eval('.dt-hero-pill', (el) =>
 	el.textContent.replace(/\s+/g, ' ').trim(),
 );
 check(
-	'the 2.0 pill above the hero art',
+	'the chevron reveals the 2.0 pill',
 	pill === 'welcome to delphitools 2.0!',
 	pill,
 );
@@ -385,7 +388,7 @@ await page.click('.dt-hero-pill');
 await sleep(200);
 check(
 	"pill opens the what's-new dialog",
-	await page.$eval('.dt-wn', (el) => el.open),
+	await page.$eval('.dt-wn:not(.dt-cl)', (el) => el.open),
 );
 for (let i = 0; i < 3; i++) {
 	await page.evaluate(() =>
@@ -401,16 +404,12 @@ const lastBtn = await page.$eval('.dt-wn-btn.is-primary', (el) =>
 check("the last slide ends on let's go", lastBtn === 'let\u2019s go', lastBtn);
 await page.click('.dt-wn-btn.is-primary');
 await sleep(200);
-check('closing returns to the page', await page.$eval('.dt-wn', (el) => !el.open));
-check(
-	'two pills above the hero art',
-	(await page.$$('.dt-hero-pill')).length === 2,
+check('closing returns to the page', await page.$eval('.dt-wn:not(.dt-cl)', (el) => !el.open));
+const second = await page.$eval('.dt-hero-link', (el) =>
+	el.textContent.replace(/\s+/g, ' ').trim(),
 );
-const second = await page.$$eval('.dt-hero-pill', (els) =>
-	els[1].textContent.replace(/\s+/g, ' ').trim(),
-);
-check("the second pill reads what's new?", second === "what's new?", second);
-await page.$$eval('.dt-hero-pill', (els) => els[1].click());
+check("the what's new link reads what's new?", second === "what's new?", second);
+await page.click('.dt-hero-link');
 await sleep(200);
 check('it opens the changelog popup', await page.$eval('.dt-cl', (el) => el.open));
 check(

@@ -15,6 +15,11 @@ const SLIDES = [0, 1, 2, 3];
 
 export default class WhatsNew extends Component {
 	@tracked slide = 0;
+	@tracked revealed = false;
+
+	toggle = () => {
+		this.revealed = !this.revealed;
+	};
 
 	get atStart() {
 		return this.slide === 0;
@@ -40,13 +45,28 @@ export default class WhatsNew extends Component {
 		<Dialog @onClose={{this.reset}} as |d|>
 			<button
 				type="button"
-				class="dt-hero-pill"
-				{{d.focusOnClose}}
-				{{on "click" d.open}}
+				class="dt-hero-reveal"
+				aria-label="Show welcome"
+				aria-expanded={{if
+					this.revealed
+					"true"
+					"false"
+				}}
+				{{on "click" this.toggle}}
 			>
-				<Icon @name="party-popper" />
-				{{PILL_TEXT}}
+				<Icon @name="chevron-right" />
 			</button>
+			{{#if this.revealed}}
+				<button
+					type="button"
+					class="dt-hero-pill"
+					{{d.focusOnClose}}
+					{{on "click" d.open}}
+				>
+					<Icon @name="party-popper" />
+					{{PILL_TEXT}}
+				</button>
+			{{/if}}
 			<d.Content class="dt-wn">
 				<h2 class="dt-sr-only">delphitools 2.0</h2>
 				<div class="dt-wn-slide">
