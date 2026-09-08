@@ -1979,6 +1979,8 @@ $header-height: crayon.size(14);
 
 // templates/workflow.gts
 .dt-pass-room {
+	--sticker: #{crayon.size(20)};
+
 	position: fixed;
 	inset: 0;
 	display: grid;
@@ -1988,6 +1990,20 @@ $header-height: crayon.size(14);
 	padding: crayon.size(6);
 	overflow: auto;
 	background: var(--background);
+	isolation: isolate;
+
+	// sticker wallpaper
+	&::before {
+		content: "";
+		position: absolute;
+		inset: -25%;
+		z-index: -1;
+		background: url("/art/alien-badge.webp") center / var(--sticker)
+			var(--sticker) space;
+		opacity: 0.08;
+		rotate: -8deg;
+		pointer-events: none;
+	}
 }
 
 .dt-pass {
