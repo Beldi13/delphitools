@@ -87,7 +87,7 @@ async function boot(url, evaluate) {
 const routes = [
 	{
 		url: '/',
-		title: 'delphitools — privacy-first browser tools',
+		title: 'delphitools — digital indie toolkit',
 		description:
 			'A collection of small, low stakes and low effort tools. No logins, no registration, no data collection. Everything runs locally in your browser.',
 		image: '/og.png',
