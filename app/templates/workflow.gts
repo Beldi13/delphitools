@@ -74,6 +74,36 @@ class WorkflowTemplate extends Component<Signature> {
 		{{pageTitle "Workflow"}}
 
 		<div class="dt-pass-room">
+			<svg class="dt-pass-wallpaper" aria-hidden="true">
+				<defs>
+					<pattern
+						id="dt-pass-hex"
+						width="120"
+						height="208"
+						patternUnits="userSpaceOnUse"
+					>
+						<image
+							href="/art/alien-badge.webp"
+							x="10"
+							y="32"
+							width="40"
+							height="40"
+						/>
+						<image
+							href="/art/alien-badge.webp"
+							x="70"
+							y="136"
+							width="40"
+							height="40"
+						/>
+					</pattern>
+				</defs>
+				<rect
+					width="100%"
+					height="100%"
+					fill="url(#dt-pass-hex)"
+				/>
+			</svg>
 			<article class="dt-pass">
 				<div class="dt-pass-main">
 					<p class="dt-pass-band">
