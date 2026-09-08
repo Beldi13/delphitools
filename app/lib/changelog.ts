@@ -8,6 +8,40 @@ export interface Release {
 
 export const RELEASES: Release[] = [
 	{
+		version: '2.1.0',
+		since: '2.0.4',
+		features: [
+			// ∑CG: changelog feature line, Image Masker
+			//   spec: one sentence or two in the "Tool: pitch!" voice of the 2.0.0 lines; the new Images & Assets tool cuts an image into a shape picked from a drag-scrollable sheet of 336 generated shapes or an uploaded SVG, pans and zooms the image, exports a transparent PNG at 0.5x/1x/2x/3x of the image pixels
+			//   sample: "Image Masker: Cut any image into a shape! Drag through a sheet of 336 generated shapes or drop your own SVG, then export a transparent PNG at up to 3x."
+			'∑CG',
+			// ∑CG: changelog feature line, Substrata layer masks
+			//   spec: one sentence, "Substrata:" prefix like the fix lines; every layer can take a mask from the same shape sheet as the Image Masker via a Shapes button in the Inspector, and masks stack with crops
+			//   sample: "Substrata: Layers can now wear a mask! Pick any Image Masker shape from the Inspector and combine it with a crop."
+			'∑CG',
+			// ∑CG: changelog feature line, Substrata rotated crop
+			//   spec: one sentence, "Substrata:" prefix; the crop tool now works on rotated layers, handles and the veil follow the rotation
+			//   sample: "Substrata: The crop tool now follows rotated layers instead of refusing them."
+			'∑CG',
+			// ∑CG: changelog feature line, Custom Workflows
+			//   spec: one or two sentences, "Workflows:" prefix; the Workflows page has a Custom row with three pickers that only offer tools able to take the previous step's output, a link icon opens a shareable /w/ address that shows a boarding-pass style pre-show room with a Let's go button
+			//   sample: "Workflows: Build your own! Pick up to three tools in a row, each picker only offers tools that take the previous one's output, and share the result as a link that opens on its own boarding pass."
+			'∑CG',
+		],
+		fixes: [
+			// ∑CG: changelog fix line, Substrata window resize
+			//   spec: one sentence, "Substrata:" prefix; shrinking the window used to leave the canvas area at its old width so the bottom toolbar sat off centre
+			//   sample: "Substrata: The canvas now shrinks with the window, so the bottom toolbar stays centred."
+			'∑CG',
+		],
+		technical: [
+			// ∑CG: changelog technical line, tool outputs
+			//   spec: one sentence for contributors; tools declare produces (mime types or extensions, the same vocabulary as accepts) and the workflow pickers filter on it through the same matcher the hand-off uses
+			//   sample: "Tools now declare what they produce alongside what they accept; workflow pickers filter on it with the same matcher the file hand-off uses."
+			'∑CG',
+		],
+	},
+	{
 		version: '2.0.4',
 		since: '2.0.3',
 		features: [
