@@ -22,10 +22,7 @@ const ACCEPT = 'image/*,.svg';
 const SVG_ACCEPT = '.svg,image/svg+xml';
 const SCALES = [0.5, 1, 2, 3];
 
-// ∑CG: hint under the drop title on the stage
-//   spec: ≤ 60 chars, says raster files become the image and .svg files become the shape, mentions paste
-//   sample: "PNG or JPG for the picture, SVG for the shape, or paste"
-const DROP_HINT = '∑CG';
+const DROP_HINT = 'Image: PNG/JPG, Shape: SVG, or paste';
 
 type Mask = MaskShape | HTMLImageElement;
 
