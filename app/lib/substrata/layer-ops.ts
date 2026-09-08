@@ -90,18 +90,12 @@ export function setCrop(
 	else update(apply);
 }
 
-export function setMask(
-	id: string,
-	mask: LayerMask | null,
-	opts?: { transient?: boolean },
-): void {
-	const apply = (doc: SubstrataDoc): SubstrataDoc => ({
+export function setMask(id: string, mask: LayerMask | null): void {
+	update((doc) => ({
 		...doc,
 		layers: mapLayerInTree(doc.layers, id, (l) => ({ ...l, mask })),
 		updatedAt: Date.now(),
-	});
-	if (opts?.transient) updateTransient(apply);
-	else update(apply);
+	}));
 }
 
 export function setFill(

@@ -1,6 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
+import { guidFor } from '@ember/object/internals';
 import { eq } from 'ember-truth-helpers';
 import { LinkTo } from '@ember/routing';
 import Dialog from 'delphitools-v2/components/ui/dialog';
@@ -16,6 +17,8 @@ const SLIDES = [0, 1, 2, 3];
 export default class WhatsNew extends Component {
 	@tracked slide = 0;
 	@tracked revealed = false;
+
+	pillId = `${guidFor(this)}-pill`;
 
 	toggle = () => {
 		this.revealed = !this.revealed;
@@ -46,12 +49,17 @@ export default class WhatsNew extends Component {
 			<button
 				type="button"
 				class="dt-hero-reveal"
-				aria-label="Show welcome"
+				aria-label={{if
+					this.revealed
+					"Hide welcome"
+					"Show welcome"
+				}}
 				aria-expanded={{if
 					this.revealed
 					"true"
 					"false"
 				}}
+				aria-controls={{if this.revealed this.pillId}}
 				{{on "click" this.toggle}}
 			>
 				<Icon @name="chevron-right" />
@@ -59,6 +67,7 @@ export default class WhatsNew extends Component {
 			{{#if this.revealed}}
 				<button
 					type="button"
+					id={{this.pillId}}
 					class="dt-hero-pill"
 					{{d.focusOnClose}}
 					{{on "click" d.open}}

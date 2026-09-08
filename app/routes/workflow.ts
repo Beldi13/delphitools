@@ -15,8 +15,6 @@ export default class WorkflowRoute extends Route<Workflow> {
 	}
 
 	model({ steps }: { steps: string }): Workflow {
-		const workflow = workflowFromPath(steps);
-		if (!workflow) throw new Error(`Unknown workflow: ${steps}`);
-		return workflow;
+		return workflowFromPath(steps)!;
 	}
 }

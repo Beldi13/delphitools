@@ -1627,33 +1627,33 @@ export default class FabricCanvas extends Component {
 				},
 			};
 		};
-		// local <-> screen through scale, flips and rotation
+		// centre-origin local to screen
 		const cropProject = (
 			t: Transform,
 			dims: { width: number; height: number },
 		) => {
-			const vt = canvas.viewportTransform;
-			const ex = t.scaleX * (t.flipX ? -1 : 1);
-			const ey = t.scaleY * (t.flipY ? -1 : 1);
-			const th = fabricUtil.degreesToRadians(t.angle);
-			const cos = Math.cos(th);
-			const sin = Math.sin(th);
+			const local = fabricUtil.composeMatrix({
+				angle: t.angle,
+				scaleX: t.scaleX,
+				scaleY: t.scaleY,
+				flipX: t.flipX,
+				flipY: t.flipY,
+				translateX: t.x,
+				translateY: t.y,
+			});
+			const screen = fabricUtil.multiplyTransformMatrices(
+				canvas.viewportTransform,
+				local,
+			);
+			const inverse = fabricUtil.invertTransform(local);
 			return {
-				toScreen: (lx: number, ly: number) => {
-					const dx = (lx - dims.width / 2) * ex;
-					const dy = (ly - dims.height / 2) * ey;
-					return {
-						x: (t.x + dx * cos - dy * sin) * vt[0] + vt[4],
-						y: (t.y + dx * sin + dy * cos) * vt[3] + vt[5],
-					};
-				},
+				toScreen: (lx: number, ly: number) =>
+					new Point(lx - dims.width / 2, ly - dims.height / 2).transform(
+						screen,
+					),
 				toLocal: (sceneX: number, sceneY: number) => {
-					const dx = sceneX - t.x;
-					const dy = sceneY - t.y;
-					return {
-						lx: (dx * cos + dy * sin) / (ex || 1) + dims.width / 2,
-						ly: (-dx * sin + dy * cos) / (ey || 1) + dims.height / 2,
-					};
+					const p = new Point(sceneX, sceneY).transform(inverse);
+					return { lx: p.x + dims.width / 2, ly: p.y + dims.height / 2 };
 				},
 			};
 		};
@@ -2526,7 +2526,7 @@ export default class FabricCanvas extends Component {
 					ctx.closePath();
 				};
 				ctx.save();
-				// veil = layer quad minus crop quad
+				// veil: layer minus crop
 				ctx.fillStyle = 'rgba(0,0,0,0.35)';
 				ctx.beginPath();
 				quad(0, 0, dims.width, dims.height);

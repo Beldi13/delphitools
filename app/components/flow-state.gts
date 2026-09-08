@@ -120,11 +120,7 @@ export default class FlowState extends Component {
 	next = () => void this.flow.advance();
 
 	exit = () => {
-		if (
-			this.flow.files.length === 0 ||
-			confirm('Discard captures?')
-		)
-			void this.flow.exit();
+		if (this.flow.confirmDiscard()) void this.flow.exit();
 	};
 
 	focus = modifier((element: HTMLElement) => {

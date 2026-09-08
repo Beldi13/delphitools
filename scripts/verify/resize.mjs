@@ -1,5 +1,5 @@
 // needs `npm start` on :3000
-// regression: the canvas area kept its first width after the window shrank
+// canvas kept first width
 import { BASE, check, finish, launch, sleep } from './harness.mjs';
 
 const { browser, page } = await launch({ viewport: { width: 1400, height: 900 } });

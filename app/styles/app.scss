@@ -1847,6 +1847,12 @@ $header-height: crayon.size(14);
 		outline: 2px solid var(--ring);
 		outline-offset: -2px;
 	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		pointer-events: none;
+	}
 }
 
 @include crayon.containers(56rem) {
@@ -1991,7 +1997,7 @@ $header-height: crayon.size(14);
 	isolation: isolate;
 }
 
-// hex lattice of the sticker
+// sticker hex lattice
 .dt-pass-wallpaper {
 	position: absolute;
 	inset: -25%;
@@ -2007,12 +2013,29 @@ $header-height: crayon.size(14);
 	--pass-notch: #{crayon.size(6)};
 	--pass-hole: calc(var(--pass-notch) / 2 - 2px);
 	--pass-edge: calc(var(--pass-hole) + 0.5px);
+	--notch-1: calc(var(--pass-notch) / -2 - 1px);
+	--notch-2: calc(var(--pass-notch) / -2 - 2px);
 
 	display: grid;
 	width: min(100%, crayon.size(240));
 }
 
-// each panel punches its half notch
+// half notches per panel
+@mixin pass-notches($first, $second) {
+	mask:
+		radial-gradient(
+			circle at #{$first},
+			transparent var(--pass-hole),
+			#000 var(--pass-edge)
+		),
+		radial-gradient(
+			circle at #{$second},
+			transparent var(--pass-hole),
+			#000 var(--pass-edge)
+		);
+	mask-composite: intersect;
+}
+
 .dt-pass-main,
 .dt-pass-stub {
 	position: relative;
@@ -2032,57 +2055,33 @@ $header-height: crayon.size(14);
 }
 
 .dt-pass-main {
+	@include pass-notches(0 calc(100% + 1px), 100% calc(100% + 1px));
+
 	border-bottom: 0;
-	mask:
-		radial-gradient(
-			circle at 0 calc(100% + 1px),
-			transparent var(--pass-hole),
-			#000 var(--pass-edge)
-		),
-		radial-gradient(
-			circle at 100% calc(100% + 1px),
-			transparent var(--pass-hole),
-			#000 var(--pass-edge)
-		);
-	mask-composite: intersect;
 
 	&::before {
-		bottom: calc(var(--pass-notch) / -2 - 1px);
-		left: calc(var(--pass-notch) / -2 - 2px);
+		inset: auto auto var(--notch-1) var(--notch-2);
 	}
 
 	&::after {
-		right: calc(var(--pass-notch) / -2 - 2px);
-		bottom: calc(var(--pass-notch) / -2 - 1px);
+		inset: auto var(--notch-2) var(--notch-1) auto;
 	}
 }
 
 .dt-pass-stub {
+	@include pass-notches(0 1px, 100% 1px);
+
 	display: grid;
 	gap: crayon.size(4);
 	padding: crayon.size(5);
 	border-top: 2px dashed var(--border);
-	mask:
-		radial-gradient(
-			circle at 0 1px,
-			transparent var(--pass-hole),
-			#000 var(--pass-edge)
-		),
-		radial-gradient(
-			circle at 100% 1px,
-			transparent var(--pass-hole),
-			#000 var(--pass-edge)
-		);
-	mask-composite: intersect;
 
 	&::before {
-		top: calc(var(--pass-notch) / -2 - 1px);
-		left: calc(var(--pass-notch) / -2 - 2px);
+		inset: var(--notch-1) auto auto var(--notch-2);
 	}
 
 	&::after {
-		top: calc(var(--pass-notch) / -2 - 1px);
-		right: calc(var(--pass-notch) / -2 - 2px);
+		inset: var(--notch-1) var(--notch-2) auto auto;
 	}
 }
 
@@ -2181,57 +2180,36 @@ $header-height: crayon.size(14);
 	}
 
 	.dt-pass-main {
+		@include pass-notches(
+			calc(100% + 1px) 0,
+			calc(100% + 1px) 100%
+		);
+
 		border-right: 0;
 		border-bottom: 2px solid var(--border);
-		mask:
-			radial-gradient(
-				circle at calc(100% + 1px) 0,
-				transparent var(--pass-hole),
-				#000 var(--pass-edge)
-			),
-			radial-gradient(
-				circle at calc(100% + 1px) 100%,
-				transparent var(--pass-hole),
-				#000 var(--pass-edge)
-			);
-		mask-composite: intersect;
 
 		&::before {
-			inset: calc(var(--pass-notch) / -2 - 2px)
-				calc(var(--pass-notch) / -2 - 1px) auto auto;
+			inset: var(--notch-2) var(--notch-1) auto auto;
 		}
 
 		&::after {
-			right: calc(var(--pass-notch) / -2 - 1px);
-			bottom: calc(var(--pass-notch) / -2 - 2px);
+			inset: auto var(--notch-1) var(--notch-2) auto;
 		}
 	}
 
 	.dt-pass-stub {
+		@include pass-notches(1px 0, 1px 100%);
+
 		grid-template-rows: 1fr auto;
 		border-top: 2px solid var(--border);
 		border-left: 2px dashed var(--border);
-		mask:
-			radial-gradient(
-				circle at 1px 0,
-				transparent var(--pass-hole),
-				#000 var(--pass-edge)
-			),
-			radial-gradient(
-				circle at 1px 100%,
-				transparent var(--pass-hole),
-				#000 var(--pass-edge)
-			);
-		mask-composite: intersect;
 
 		&::before {
-			top: calc(var(--pass-notch) / -2 - 2px);
-			left: calc(var(--pass-notch) / -2 - 1px);
+			inset: var(--notch-2) auto auto var(--notch-1);
 		}
 
 		&::after {
-			inset: auto auto calc(var(--pass-notch) / -2 - 2px)
-				calc(var(--pass-notch) / -2 - 1px);
+			inset: auto auto var(--notch-2) var(--notch-1);
 		}
 	}
 }

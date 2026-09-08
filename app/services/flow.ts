@@ -289,7 +289,12 @@ export default class FlowService extends Service {
 		return this.workflow !== null && this.onStepPage;
 	}
 
+	confirmDiscard() {
+		return this.files.length === 0 || confirm('Discard captures?');
+	}
+
 	async start(workflow: Workflow) {
+		if (this.active && !this.confirmDiscard()) return;
 		if (this.runId) await clearFlowFiles(this.runId);
 		this.workflow = workflow;
 		this.files = [];

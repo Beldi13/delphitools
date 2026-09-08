@@ -103,7 +103,7 @@ px = await sample(850, 450);
 const pxIn = await sample(950, 450);
 check("move: pixels stay cropped at the new spot", `strip=${px?.join(",")} kept=${pxIn?.join(",")}`, near(px, WHITE) && near(pxIn, GREEN));
 
-// rotated 90° about (800, 450): local +x now points down the screen
+// rotated 90°, local +x down
 await page.evaluate((lid) => {
   window.__substrata.setCrop(lid, null);
   window.__substrata.setTransform(lid, { x: 800, y: 450, scaleX: 1, scaleY: 1, angle: 90, flipX: false, flipY: false });

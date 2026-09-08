@@ -83,6 +83,11 @@ module('Unit | lib | workflows', function () {
 			customWorkflow(['pixel-picker', 'image-compressor']),
 			'a colour is not an image',
 		);
+		assert.notOk(
+			customWorkflow(['paste-image', 'pixel-picker']),
+			'a colour-only last step never finishes',
+		);
+		assert.ok(customWorkflow(['pixel-picker', 'gradient-genny']));
 		assert.ok(
 			customWorkflow(['auto-subtitle', 'subtitle-converter']),
 			'extension-only accepts',

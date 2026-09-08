@@ -27,7 +27,7 @@ const GLYPHS: Record<string, string[]> = {
 const WORD = 'DELPHI';
 const BARCODE_WIDTH = WORD.length * 6 - 1;
 
-// one bar per vertical run
+// bar per vertical run
 const BARS = [...WORD].flatMap((letter, k) => {
 	const rows = GLYPHS[letter]!;
 	const bars: { x: number; y: number; h: number }[] = [];
@@ -59,16 +59,7 @@ class WorkflowTemplate extends Component<Signature> {
 		}));
 	}
 
-	start = () => {
-		const { flow } = this;
-		if (
-			flow.active &&
-			flow.files.length > 0 &&
-			!confirm('Discard captures?')
-		)
-			return;
-		void flow.start(this.args.model);
-	};
+	start = () => void this.flow.start(this.args.model);
 
 	<template>
 		{{pageTitle "Workflow"}}

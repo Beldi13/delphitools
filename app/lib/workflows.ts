@@ -1,4 +1,7 @@
-import { matchesAccept } from 'delphitools-v2/modifiers/file-paste';
+import {
+	acceptsFile,
+	matchesAccept,
+} from 'delphitools-v2/modifiers/file-paste';
 import {
 	COLOUR_OUTPUT,
 	allTools,
@@ -157,14 +160,10 @@ export function canFollow(prev: Tool, next: Tool): boolean {
 	if (!eligible(next)) return false;
 	const out = prev.produces ?? [];
 	if (next.carryColour && out.includes(COLOUR_OUTPUT)) return true;
-	const accept = next.accepts?.join(',');
-	return (
-		!!accept &&
-		out.some(
-			(produced) =>
-				produced !== COLOUR_OUTPUT &&
-				matchesAccept(sample(produced), accept),
-		)
+	return out.some(
+		(produced) =>
+			produced !== COLOUR_OUTPUT &&
+			acceptsFile(next, sample(produced)),
 	);
 }
 
@@ -182,6 +181,9 @@ export function customWorkflow(steps: string[]): Workflow | undefined {
 		const tool = tools[i];
 		if (!tool || !canFollow(tools[i - 1]!, tool)) return undefined;
 	}
+	// colour tails never finish
+	if (!tools.at(-1)!.produces!.some((p) => p !== COLOUR_OUTPUT))
+		return undefined;
 	return {
 		id: CUSTOM_PREFIX + stepsPath(steps),
 		name: CUSTOM_NAME,

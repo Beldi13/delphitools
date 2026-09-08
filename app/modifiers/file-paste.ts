@@ -30,6 +30,12 @@ export default modifier(
 	},
 );
 
+export const acceptsFile = (
+	tool: { accepts?: string[] },
+	file: File,
+): boolean =>
+	!!tool.accepts?.length && matchesAccept(file, tool.accepts.join(','));
+
 export function matchesAccept(file: File, accept: string): boolean {
 	return accept.split(',').some((pattern) => {
 		const p = pattern.trim();

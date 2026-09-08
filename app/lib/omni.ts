@@ -10,7 +10,7 @@ import {
 import { colourToQuery } from './colour-query';
 import { simulateHex, type SimulationType } from './colour-vision';
 import { formatScientific } from './math-constants';
-import { matchesAccept } from 'delphitools-v2/modifiers/file-paste';
+import { acceptsFile } from 'delphitools-v2/modifiers/file-paste';
 import type { CategoryKey } from 'delphitools-v2/components/tools/unit-converter';
 
 export interface OmniAnswer {
@@ -40,11 +40,7 @@ export function searchTools(query: string): Tool[] {
 }
 
 export function toolsForFile(file: File): Tool[] {
-	return allTools.filter((tool) =>
-		tool.accepts
-			? matchesAccept(file, tool.accepts.join(','))
-			: false,
-	);
+	return allTools.filter((tool) => acceptsFile(tool, file));
 }
 
 // ignore numeric hex

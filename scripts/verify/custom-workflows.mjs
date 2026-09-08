@@ -1,6 +1,6 @@
 import { BASE, launch, visit, check, finish, sleep } from './harness.mjs';
 
-// bare routes have no .dt-main
+// bare routes lack .dt-main
 const goBare = (page, path) => page.goto(`${BASE}${path}`, { waitUntil: 'networkidle2' });
 
 const { browser, page } = await launch();

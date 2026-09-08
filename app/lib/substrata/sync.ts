@@ -241,7 +241,7 @@ function syncClip(obj: FabricObject, layer: Layer): void {
 	const dims = layer.crop || layer.mask ? layerDims(layer) : null;
 	const crop = dims ? layer.crop : null;
 	const mask = dims ? layer.mask : null;
-	if (!dims || (!crop && !mask)) {
+	if (!dims) {
 		if (obj.clipPath) {
 			obj.clipPath = undefined;
 			obj.set('dirty', true);

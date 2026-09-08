@@ -1,10 +1,10 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
 import { LinkTo } from '@ember/routing';
 import { service } from '@ember/service';
-import { eq } from 'ember-truth-helpers';
+import { eq, not } from 'ember-truth-helpers';
 import Icon from 'delphitools-v2/components/icon';
 import {
 	Select,
@@ -66,6 +66,7 @@ export default class WorkflowList extends Component<{
 		});
 	}
 
+	@cached
 	get custom() {
 		return customWorkflow(this.picks);
 	}
@@ -78,15 +79,10 @@ export default class WorkflowList extends Component<{
 		this.picks = [...this.picks.slice(0, index), id];
 	};
 
-	start = (workflow: Workflow) => {
-		const { flow } = this;
-		if (
-			flow.active &&
-			flow.files.length > 0 &&
-			!confirm('Discard captures?')
-		)
-			return;
-		void flow.start(workflow);
+	start = (workflow: Workflow) => void this.flow.start(workflow);
+
+	startCustom = () => {
+		if (this.custom) this.start(this.custom);
 	};
 
 	<template>
@@ -224,37 +220,22 @@ export default class WorkflowList extends Component<{
 								</td>
 							{{/each}}
 							<td class="dt-wf-cell">
-								{{#if
-									this.custom
-								}}
-									<button
-										type="button"
-										class="dt-wf-go"
-										{{on
-											"click"
-											(fn
-												this.start
-												this.custom
-											)
-										}}
-									>
-										Start
-										<Icon
-											@name="arrow-right"
-										/>
-									</button>
-								{{else}}
-									<button
-										type="button"
-										class="dt-wf-go"
-										disabled
-									>
-										Start
-										<Icon
-											@name="arrow-right"
-										/>
-									</button>
-								{{/if}}
+								<button
+									type="button"
+									class="dt-wf-go"
+									disabled={{not
+										this.custom
+									}}
+									{{on
+										"click"
+										this.startCustom
+									}}
+								>
+									Start
+									<Icon
+										@name="arrow-right"
+									/>
+								</button>
 							</td>
 						</tr>
 						{{#each
