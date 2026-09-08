@@ -9,7 +9,7 @@ import {
 	getWorkflowById,
 	nextTools,
 	pendingFor,
-	workflowFromQuery,
+	workflowFromPath,
 	workflowTools,
 } from 'delphitools-v2/lib/workflows';
 
@@ -118,20 +118,20 @@ module('Unit | lib | workflows', function () {
 		assert.deepEqual(nextTools(tool('word-counter')), []);
 	});
 
-	test('custom ids round-trip through getWorkflowById and the query', function (assert) {
+	test('custom ids round-trip through getWorkflowById and the path', function (assert) {
 		const steps = ['paste-image', 'metadata-stripper'];
 		const custom = customWorkflow(steps)!;
 		assert.strictEqual(
 			custom.id,
-			`${CUSTOM_PREFIX}${steps.join(',')}`,
+			`${CUSTOM_PREFIX}${steps.join('.')}`,
 		);
 		assert.deepEqual(getWorkflowById(custom.id), custom);
-		assert.deepEqual(workflowFromQuery(steps.join(',')), custom);
+		assert.deepEqual(workflowFromPath(steps.join('.')), custom);
 		assert.strictEqual(
-			workflowFromQuery('paste-image,pdf-compressor'),
+			workflowFromPath('paste-image.pdf-compressor'),
 			undefined,
 		);
-		assert.strictEqual(workflowFromQuery(null), undefined);
+		assert.strictEqual(workflowFromPath(''), undefined);
 		assert.strictEqual(getWorkflowById('custom:'), undefined);
 	});
 

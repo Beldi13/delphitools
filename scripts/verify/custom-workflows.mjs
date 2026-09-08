@@ -1,4 +1,7 @@
-import { launch, visit, check, finish, sleep } from './harness.mjs';
+import { BASE, launch, visit, check, finish, sleep } from './harness.mjs';
+
+// bare routes have no .dt-main
+const goBare = (page, path) => page.goto(`${BASE}${path}`, { waitUntil: 'networkidle2' });
 
 const { browser, page } = await launch();
 page.on('dialog', (dialog) => void dialog.accept());
@@ -78,7 +81,7 @@ await choose('Image Compressor');
 const href = await page.$eval('.dt-wf-link', (a) => a.getAttribute('href'));
 check(
 	'the share link carries the sequence',
-	/\/workflows\?steps=video-trimmer(,|%2C)video-to-gif(,|%2C)image-compressor$/.test(href),
+	href === '/w/video-trimmer.video-to-gif.image-compressor',
 	href,
 );
 
@@ -108,31 +111,36 @@ check(
 	state.path === '/tools/screen-recorder' &&
 		state.name === 'Custom workflow' &&
 		state.steps.join() === 'Screen Recorder,Video Trimmer' &&
-		state.record === 'custom:screen-recorder,video-trimmer',
+		state.record === 'custom:screen-recorder.video-trimmer',
 	JSON.stringify(state),
 );
 await page.click('.dt-flow-exit');
 await sleep(300);
 
-await visit(page, '/workflows?steps=paste-image,metadata-stripper');
-await page.waitForSelector('.dt-wf-prepare', { timeout: 15000 });
-const prepare = await page.evaluate(() => ({
-	kicker: document.querySelector('.dt-wf-prepare-kicker')?.textContent?.replace(/\s+/g, ' ').trim(),
-	steps: [...document.querySelectorAll('.dt-wf-prepare-step')].map((el) =>
-		el.textContent.replace(/\s+/g, ' ').trim(),
-	),
-	go: document.querySelector('.dt-wf-prepare-go')?.textContent?.replace(/\s+/g, ' ').trim(),
-	list: !!document.querySelector('.dt-wf-row'),
-}));
+await goBare(page, '/w/paste-image.metadata-stripper');
+await page.waitForSelector('.dt-pass', { timeout: 15000 });
+const pass = await page.evaluate(() => {
+	const box = document.querySelector('.dt-pass').getBoundingClientRect();
+	return {
+		band: document.querySelector('.dt-pass-band')?.textContent?.replace(/\s+/g, ' ').trim(),
+		legs: [...document.querySelectorAll('.dt-pass-leg')].map((el) =>
+			el.textContent.replace(/\s+/g, ' ').trim(),
+		),
+		go: document.querySelector('.dt-pass-go')?.textContent?.replace(/\s+/g, ' ').trim(),
+		bare: !document.querySelector('.dt-shell') && !document.querySelector('.dt-header'),
+		offCentre: Math.abs(box.left + box.width / 2 - innerWidth / 2),
+	};
+});
 check(
-	'a share link renders the prepare screen instead of the list',
-	prepare.kicker === 'delphitools Workflow:' &&
-		prepare.steps.join('|') === 'First, Paste Image|Then... Metadata Stripper' &&
-		prepare.go === "Let's go" &&
-		!prepare.list,
-	JSON.stringify(prepare),
+	'a share link renders the bare boarding pass',
+	pass.band === 'delphitools Workflow:' &&
+		pass.legs.join('|') === 'First, Paste Image|Then... Metadata Stripper' &&
+		pass.go === "Let's go" &&
+		pass.bare,
+	JSON.stringify(pass),
 );
-await page.click('.dt-wf-prepare-go');
+check('the pass is centred', pass.offCentre < 2, `${pass.offCentre}px off`);
+await page.click('.dt-pass-go');
 await page.waitForSelector('.dt-flow', { timeout: 15000 });
 await sleep(300);
 state = await page.evaluate(() => ({
@@ -141,17 +149,17 @@ state = await page.evaluate(() => ({
 }));
 check(
 	"Let's go starts the shared flow",
-	state.path === '/tools/paste-image' && state.record === 'custom:paste-image,metadata-stripper',
+	state.path === '/tools/paste-image' && state.record === 'custom:paste-image.metadata-stripper',
 	JSON.stringify(state),
 );
 await page.click('.dt-flow-exit');
 await sleep(300);
 
-await visit(page, '/workflows?steps=paste-image,pdf-compressor');
+await goBare(page, '/w/paste-image.pdf-compressor');
 await page.waitForSelector('.dt-wf-row', { timeout: 15000 });
 check(
-	'an incompatible link falls back to the list',
-	!(await page.$('.dt-wf-prepare')),
+	'an incompatible link lands on the list',
+	(await page.evaluate(() => location.pathname)) === '/workflows' && !(await page.$('.dt-pass')),
 );
 
 await visit(page, '/workflows');
@@ -161,18 +169,18 @@ await choose('Paste Image');
 await open(1);
 await choose('Metadata Stripper');
 await page.click('.dt-wf-link');
-await page.waitForSelector('.dt-wf-prepare', { timeout: 15000 });
+await page.waitForSelector('.dt-pass', { timeout: 15000 });
 check(
-	'the share link navigates in-app to the prepare screen',
-	await page.evaluate(() => /steps=paste-image(,|%2C)metadata-stripper/.test(location.search)),
-	await page.evaluate(() => location.search),
+	'the share link navigates in-app to the pass',
+	(await page.evaluate(() => location.pathname)) === '/w/paste-image.metadata-stripper',
+	await page.evaluate(() => location.pathname),
 );
-await page.click('.dt-wf-prepare-all');
+await page.click('.dt-pass-all');
 await page.waitForSelector('.dt-wf-custom', { timeout: 15000 });
 check(
-	'All workflows returns to the list and drops the query',
-	await page.evaluate(() => location.search === '' && !document.querySelector('.dt-wf-prepare')),
-	await page.evaluate(() => location.search),
+	'All workflows returns to the list',
+	await page.evaluate(() => location.pathname === '/workflows' && !document.querySelector('.dt-pass')),
+	await page.evaluate(() => location.pathname),
 );
 
 await finish(browser);

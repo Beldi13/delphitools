@@ -12,6 +12,7 @@ Router.map(function () {
 	});
 	this.route('editor');
 	this.route('workflows');
+	this.route('workflow', { path: '/w/:steps' });
 	this.route('experiments');
 	this.route('not-found', { path: '/*path' });
 });

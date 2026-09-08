@@ -278,7 +278,7 @@ module('Unit | Service | flow', function (hooks) {
 					workflow: string;
 				}
 			).workflow,
-			'custom:paste-image,metadata-stripper',
+			'custom:paste-image.metadata-stripper',
 		);
 		assert.deepEqual(
 			flow.tools.map((tool) => tool.id),

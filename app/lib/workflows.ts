@@ -183,23 +183,21 @@ export function customWorkflow(steps: string[]): Workflow | undefined {
 		if (!tool || !canFollow(tools[i - 1]!, tool)) return undefined;
 	}
 	return {
-		id: CUSTOM_PREFIX + steps.join(','),
+		id: CUSTOM_PREFIX + stepsPath(steps),
 		name: CUSTOM_NAME,
 		steps,
 	};
 }
 
-export const customHref = (steps: string[]) =>
-	`/workflows?steps=${steps.join(',')}`;
+// /w/:steps segment
+export const stepsPath = (steps: string[]) => steps.join('.');
 
-export const workflowFromQuery = (steps: string | null | undefined) =>
-	steps ? customWorkflow(steps.split(',')) : undefined;
+export const workflowFromPath = (path: string) =>
+	customWorkflow(path.split('.'));
 
 export function getWorkflowById(id: string): Workflow | undefined {
 	if (id.startsWith(CUSTOM_PREFIX))
-		return customWorkflow(
-			id.slice(CUSTOM_PREFIX.length).split(','),
-		);
+		return workflowFromPath(id.slice(CUSTOM_PREFIX.length));
 	return WORKFLOWS.find((workflow) => workflow.id === id);
 }
 

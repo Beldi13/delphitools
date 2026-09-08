@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
-import { fn, hash } from '@ember/helper';
+import { fn } from '@ember/helper';
 import { LinkTo } from '@ember/routing';
 import { service } from '@ember/service';
 import { eq } from 'ember-truth-helpers';
@@ -20,6 +20,7 @@ import {
 	WORKFLOWS,
 	customWorkflow,
 	nextTools,
+	stepsPath,
 	workflowCategory,
 	workflowTools,
 	type Workflow,
@@ -69,8 +70,8 @@ export default class WorkflowList extends Component<{
 		return customWorkflow(this.picks);
 	}
 
-	get stepsQuery() {
-		return this.picks.join(',');
+	get stepsPath() {
+		return stepsPath(this.picks);
 	}
 
 	pick = (index: number, id: string) => {
@@ -149,10 +150,8 @@ export default class WorkflowList extends Component<{
 										this.custom
 									}}
 										<LinkTo
-											@route="workflows"
-											@query={{hash
-												steps=this.stepsQuery
-											}}
+											@route="workflow"
+											@model={{this.stepsPath}}
 											class="dt-icon-btn dt-wf-link"
 											title="Share link"
 											aria-label="Share link"

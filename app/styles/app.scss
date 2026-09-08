@@ -1977,25 +1977,42 @@ $header-height: crayon.size(14);
 	max-height: crayon.size(80);
 }
 
-.dt-wf-prepare {
+// templates/workflow.gts
+.dt-pass-room {
+	position: fixed;
+	inset: 0;
 	display: grid;
 	gap: crayon.size(5);
-	max-width: crayon.size(160);
+	place-items: center;
+	align-content: center;
 	padding: crayon.size(6);
+	overflow: auto;
+	background: var(--background);
+}
+
+.dt-pass {
+	--pass-notch: #{crayon.size(6)};
+
+	position: relative;
+	display: grid;
+	width: min(100%, crayon.size(240));
+	overflow: hidden;
 	border: 2px solid var(--border);
 	background: var(--card);
 }
 
-.dt-wf-prepare-kicker {
+.dt-pass-band {
 	display: flex;
 	align-items: center;
 	gap: crayon.size(2);
 	margin: 0;
+	padding: crayon.size(2) crayon.size(5);
+	background: var(--primary);
+	color: var(--primary-foreground);
 	font-size: crayon.font-size("xs");
 	font-weight: crayon.font-weight("medium");
 	letter-spacing: crayon.tracking("wide");
 	text-transform: uppercase;
-	color: var(--muted-foreground);
 
 	.dt-icon {
 		width: crayon.size(4);
@@ -2003,35 +2020,23 @@ $header-height: crayon.size(14);
 	}
 }
 
-.dt-wf-prepare-steps {
+.dt-pass-legs {
 	display: grid;
 	gap: 1px;
 	margin: 0;
 	padding: 0;
-	border: 1px solid var(--border);
 	background: var(--border);
 	list-style: none;
 }
 
-.dt-wf-prepare-step {
-	display: flex;
-	align-items: center;
-	gap: crayon.size(3);
-	padding: crayon.size(3) crayon.size(4);
+.dt-pass-leg {
+	display: grid;
+	gap: crayon.size(2);
+	padding: crayon.size(5) crayon.size(5) crayon.size(6);
 	background: var(--card);
-	font-size: crayon.font-size("lg");
-	font-weight: crayon.font-weight("bold");
-
-	.dt-icon {
-		width: crayon.size(5);
-		height: crayon.size(5);
-		flex-shrink: 0;
-		color: var(--primary);
-	}
 }
 
-.dt-wf-prepare-ord {
-	min-width: crayon.size(16);
+.dt-pass-ord {
 	font-size: crayon.font-size("xs");
 	font-weight: crayon.font-weight("medium");
 	letter-spacing: crayon.tracking("wide");
@@ -2039,25 +2044,113 @@ $header-height: crayon.size(14);
 	color: var(--muted-foreground);
 }
 
-.dt-wf-prepare-actions {
+.dt-pass-tool {
 	display: flex;
 	align-items: center;
-	gap: crayon.size(5);
+	gap: crayon.size(3);
+	font-size: crayon.font-size("lg");
+	font-weight: crayon.font-weight("bold");
+	line-height: crayon.leading("tight");
+
+	.dt-icon {
+		width: crayon.size(6);
+		height: crayon.size(6);
+		flex-shrink: 0;
+		color: var(--primary);
+	}
 }
 
-.dt-wf-prepare-go {
-	width: auto;
+// perforation with punched notches
+.dt-pass-stub {
+	position: relative;
+	display: grid;
+	gap: crayon.size(4);
+	padding: crayon.size(5);
+	border-top: 2px dashed var(--border);
+
+	&::before,
+	&::after {
+		content: "";
+		position: absolute;
+		top: calc(var(--pass-notch) / -2 - 1px);
+		width: var(--pass-notch);
+		height: var(--pass-notch);
+		border: 2px solid var(--border);
+		border-radius: 50%;
+		background: var(--background);
+	}
+
+	&::before {
+		left: calc(var(--pass-notch) / -2 - 2px);
+	}
+
+	&::after {
+		right: calc(var(--pass-notch) / -2 - 2px);
+	}
+}
+
+.dt-pass-barcode {
+	display: block;
+	min-height: crayon.size(12);
+	background:
+		repeating-linear-gradient(
+			90deg,
+			currentcolor 0 2px,
+			transparent 2px 5px
+		),
+		repeating-linear-gradient(
+			90deg,
+			currentcolor 0 1px,
+			transparent 1px 7px
+		);
+	opacity: 0.7;
+}
+
+.dt-pass-go {
 	min-height: crayon.size(11);
-	padding-inline: crayon.size(6);
 }
 
-.dt-wf-prepare-all {
+.dt-pass-all {
 	font-size: crayon.font-size("sm");
 	color: var(--muted-foreground);
 	text-decoration: underline;
 
 	@include crayon.hover {
 		color: var(--foreground);
+	}
+}
+
+@include crayon.screen("md") {
+	.dt-pass {
+		grid-template-columns: minmax(0, 1fr) crayon.size(56);
+	}
+
+	.dt-pass-legs {
+		grid-template-columns: repeat(
+			auto-fit,
+			minmax(crayon.size(40), 1fr)
+		);
+	}
+
+	.dt-pass-stub {
+		grid-template-rows: 1fr auto;
+		border-top: 0;
+		border-left: 2px dashed var(--border);
+
+		&::before,
+		&::after {
+			left: calc(var(--pass-notch) / -2 - 1px);
+			right: auto;
+		}
+
+		&::before {
+			top: calc(var(--pass-notch) / -2 - 2px);
+		}
+
+		&::after {
+			top: auto;
+			bottom: calc(var(--pass-notch) / -2 - 2px);
+		}
 	}
 }
 
