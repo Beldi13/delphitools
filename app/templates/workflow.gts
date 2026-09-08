@@ -16,6 +16,39 @@ interface Signature {
 	Args: { model: Workflow };
 }
 
+const GLYPHS: Record<string, string[]> = {
+	D: ['11110', '10001', '10001', '10001', '10001', '10001', '11110'],
+	E: ['11111', '10000', '10000', '11110', '10000', '10000', '11111'],
+	L: ['10000', '10000', '10000', '10000', '10000', '10000', '11111'],
+	P: ['11110', '10001', '10001', '11110', '10000', '10000', '10000'],
+	H: ['10001', '10001', '10001', '11111', '10001', '10001', '10001'],
+	I: ['11111', '00100', '00100', '00100', '00100', '00100', '11111'],
+};
+const WORD = 'DELPHI';
+const BARCODE_WIDTH = WORD.length * 6 - 1;
+
+// one bar per vertical run
+const BARS = [...WORD].flatMap((letter, k) => {
+	const rows = GLYPHS[letter]!;
+	const bars: { x: number; y: number; h: number }[] = [];
+	for (let c = 0; c < 5; c++) {
+		let start = -1;
+		for (let r = 0; r <= rows.length; r++) {
+			const lit = r < rows.length && rows[r]![c] === '1';
+			if (lit && start < 0) start = r;
+			if (!lit && start >= 0) {
+				bars.push({
+					x: k * 6 + c,
+					y: start,
+					h: r - start - 0.15,
+				});
+				start = -1;
+			}
+		}
+	}
+	return bars;
+});
+
 class WorkflowTemplate extends Component<Signature> {
 	@service declare flow: FlowService;
 
@@ -70,10 +103,21 @@ class WorkflowTemplate extends Component<Signature> {
 					</ol>
 				</div>
 				<div class="dt-pass-stub">
-					<span
+					<svg
 						class="dt-pass-barcode"
+						viewBox="0 0 {{BARCODE_WIDTH}} 7"
+						preserveAspectRatio="none"
 						aria-hidden="true"
-					></span>
+					>
+						{{#each BARS as |bar|}}
+							<rect
+								x={{bar.x}}
+								y={{bar.y}}
+								width="0.7"
+								height={{bar.h}}
+							/>
+						{{/each}}
+					</svg>
 					<button
 						type="button"
 						class="dt-wf-go dt-pass-go"

@@ -1992,13 +1992,85 @@ $header-height: crayon.size(14);
 
 .dt-pass {
 	--pass-notch: #{crayon.size(6)};
+	--pass-hole: calc(var(--pass-notch) / 2 - 2px);
+	--pass-edge: calc(var(--pass-hole) + 0.5px);
 
-	position: relative;
 	display: grid;
 	width: min(100%, crayon.size(240));
-	overflow: hidden;
+}
+
+// each panel punches its half notch
+.dt-pass-main,
+.dt-pass-stub {
+	position: relative;
 	border: 2px solid var(--border);
 	background: var(--card);
+
+	&::before,
+	&::after {
+		content: "";
+		position: absolute;
+		width: var(--pass-notch);
+		height: var(--pass-notch);
+		border: 2px solid var(--border);
+		border-radius: 50%;
+		pointer-events: none;
+	}
+}
+
+.dt-pass-main {
+	border-bottom: 0;
+	mask:
+		radial-gradient(
+			circle at 0 calc(100% + 1px),
+			transparent var(--pass-hole),
+			#000 var(--pass-edge)
+		),
+		radial-gradient(
+			circle at 100% calc(100% + 1px),
+			transparent var(--pass-hole),
+			#000 var(--pass-edge)
+		);
+	mask-composite: intersect;
+
+	&::before {
+		bottom: calc(var(--pass-notch) / -2 - 1px);
+		left: calc(var(--pass-notch) / -2 - 2px);
+	}
+
+	&::after {
+		right: calc(var(--pass-notch) / -2 - 2px);
+		bottom: calc(var(--pass-notch) / -2 - 1px);
+	}
+}
+
+.dt-pass-stub {
+	display: grid;
+	gap: crayon.size(4);
+	padding: crayon.size(5);
+	border-top: 2px dashed var(--border);
+	mask:
+		radial-gradient(
+			circle at 0 1px,
+			transparent var(--pass-hole),
+			#000 var(--pass-edge)
+		),
+		radial-gradient(
+			circle at 100% 1px,
+			transparent var(--pass-hole),
+			#000 var(--pass-edge)
+		);
+	mask-composite: intersect;
+
+	&::before {
+		top: calc(var(--pass-notch) / -2 - 1px);
+		left: calc(var(--pass-notch) / -2 - 2px);
+	}
+
+	&::after {
+		top: calc(var(--pass-notch) / -2 - 1px);
+		right: calc(var(--pass-notch) / -2 - 2px);
+	}
 }
 
 .dt-pass-band {
@@ -2060,50 +2132,13 @@ $header-height: crayon.size(14);
 	}
 }
 
-// perforation with punched notches
-.dt-pass-stub {
-	position: relative;
-	display: grid;
-	gap: crayon.size(4);
-	padding: crayon.size(5);
-	border-top: 2px dashed var(--border);
-
-	&::before,
-	&::after {
-		content: "";
-		position: absolute;
-		top: calc(var(--pass-notch) / -2 - 1px);
-		width: var(--pass-notch);
-		height: var(--pass-notch);
-		border: 2px solid var(--border);
-		border-radius: 50%;
-		background: var(--background);
-	}
-
-	&::before {
-		left: calc(var(--pass-notch) / -2 - 2px);
-	}
-
-	&::after {
-		right: calc(var(--pass-notch) / -2 - 2px);
-	}
-}
-
 .dt-pass-barcode {
 	display: block;
-	min-height: crayon.size(12);
-	background:
-		repeating-linear-gradient(
-			90deg,
-			currentcolor 0 2px,
-			transparent 2px 5px
-		),
-		repeating-linear-gradient(
-			90deg,
-			currentcolor 0 1px,
-			transparent 1px 7px
-		);
-	opacity: 0.7;
+	width: 100%;
+	height: crayon.size(12);
+	fill: currentcolor;
+	opacity: 0.75;
+	shape-rendering: crispedges;
 }
 
 .dt-pass-go {
@@ -2132,24 +2167,58 @@ $header-height: crayon.size(14);
 		);
 	}
 
+	.dt-pass-main {
+		border-right: 0;
+		border-bottom: 2px solid var(--border);
+		mask:
+			radial-gradient(
+				circle at calc(100% + 1px) 0,
+				transparent var(--pass-hole),
+				#000 var(--pass-edge)
+			),
+			radial-gradient(
+				circle at calc(100% + 1px) 100%,
+				transparent var(--pass-hole),
+				#000 var(--pass-edge)
+			);
+		mask-composite: intersect;
+
+		&::before {
+			inset: calc(var(--pass-notch) / -2 - 2px)
+				calc(var(--pass-notch) / -2 - 1px) auto auto;
+		}
+
+		&::after {
+			right: calc(var(--pass-notch) / -2 - 1px);
+			bottom: calc(var(--pass-notch) / -2 - 2px);
+		}
+	}
+
 	.dt-pass-stub {
 		grid-template-rows: 1fr auto;
-		border-top: 0;
+		border-top: 2px solid var(--border);
 		border-left: 2px dashed var(--border);
-
-		&::before,
-		&::after {
-			left: calc(var(--pass-notch) / -2 - 1px);
-			right: auto;
-		}
+		mask:
+			radial-gradient(
+				circle at 1px 0,
+				transparent var(--pass-hole),
+				#000 var(--pass-edge)
+			),
+			radial-gradient(
+				circle at 1px 100%,
+				transparent var(--pass-hole),
+				#000 var(--pass-edge)
+			);
+		mask-composite: intersect;
 
 		&::before {
 			top: calc(var(--pass-notch) / -2 - 2px);
+			left: calc(var(--pass-notch) / -2 - 1px);
 		}
 
 		&::after {
-			top: auto;
-			bottom: calc(var(--pass-notch) / -2 - 2px);
+			inset: auto auto calc(var(--pass-notch) / -2 - 2px)
+				calc(var(--pass-notch) / -2 - 1px);
 		}
 	}
 }
